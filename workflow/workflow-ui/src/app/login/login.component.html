@@ -1,0 +1,30 @@
+<form fxLayout="row" fxLayoutAlign="center center" (submit)="login()" style="height: 100%;">
+    <mat-card fxFlex="33"  class="mat-elevation-z16"> 
+        <mat-card-header class="aligncenter">
+            <div mat-card-avatar><mat-icon color="accent" style="transform: rotate(30deg); border-radius:100%;">vpn_key</mat-icon></div>
+            <mat-card-title-group fxLayoutAlign="center center" style="width: 100%;">
+                <mat-card-title>Key Results Management</mat-card-title>
+                <mat-card-subtitle>Login</mat-card-subtitle>
+            </mat-card-title-group>
+        </mat-card-header>
+        <mat-card-content>
+            <div fxLayout="column" fxLayoutGap="10px">
+                <mat-form-field>
+                    <input matInput placeholder="Enter your login name" [formControl]="loginName" required autofocus>
+                    <mat-error *ngIf="loginName.invalid">{{getErrorMessage()}}</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput placeholder="Enter your password" [formControl]="password" [type]="hide ? 'password' : 'text'" required>
+                    <button type="button" mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+        </mat-card-content>
+        <mat-card-actions>
+            <div fxLayout="row" fxLayoutAlign="center center" >
+                <button type="submit" fxFlex="50" id="btnlogin" [disabled]="isLoading || loginName.invalid || password.invalid" mat-raised-button color="primary">Login</button>
+            </div>
+        </mat-card-actions>
+    </mat-card>
+</form>

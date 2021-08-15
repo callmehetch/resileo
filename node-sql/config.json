@@ -1,0 +1,10 @@
+﻿{
+    "database": {
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "Netflix@123",
+        "database": "node-mysql-registration-login-api"
+    },
+    "secret": "4a148021-9e53-45d2-b1e5-f50db68ff01b"
+}

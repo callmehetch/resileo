@@ -1,0 +1,3 @@
+::ng-deep .mat-selected .mat-pseudo-checkbox-checked {
+    background-color: darkblue;
+}

@@ -1,0 +1,41 @@
+<mat-toolbar  fxLayoutAlign="space-between center" class="mat-elevation-z0">
+	<div fxFlex="20" fxFlex.lg="20" fxFlex.md="15" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center" (click)="home()">
+		<div ><img src="../../assets/image/adqvest_small.png" style="width:122px; height:auto"/></div>
+	</div>
+	<div fxFlex=50 fxLayoutAlign="center center">
+		<mat-icon style="width:45px;" class="search pointer" (click)="fnSearch(13)">search</mat-icon>
+		<input mat-input placeholder="Search" [(ngModel)]="qrySearch" type="search" class="searchinput" (keyup)="fnSearch($event.keyCode)">
+		<div class="searchclosure"></div>
+	</div>
+	<div fxFlex="20" fxFlex.md="50" fxLayout="row wrap" fxLayoutAlign="end center" style="margin-right:24px" >
+		<button *ngIf="!isMobile" fxHide.lt-lg="true" class="fntwt600" mat-button >{{userName.split(' ')[0]}}</button>
+		<mat-menu #user="matMenu">
+			<button mat-menu-item class="pointer" (click)="changePassword()">
+				<mat-icon color="primary">lock</mat-icon>
+				<span>Change Password</span>
+			</button>
+			<button mat-menu-item class="pointer" (click)="mngOrg()" >
+				<mat-icon color="primary">domain</mat-icon>
+				<span>My Account</span>
+			</button>
+ 			<button *ngIf="userDet.is_admin" mat-menu-item class="pointer" (click)="mngAdmin()">
+				<mat-icon color="primary">admin_panel_settings</mat-icon>
+				<span>Admin</span>
+			</button>
+			<!-- <button *ngIf="!userDet.is_admin" mat-menu-item class="pointer" (click)="delAccount()">
+				<mat-icon color="primary">person_off</mat-icon>
+				<span>Delete My Account</span>
+			</button> -->
+			<button mat-menu-item class="pointer" (click)="logout()" >
+				<mat-icon color="primary">logout</mat-icon>
+				<span>Sign out</span>
+			</button>
+		</mat-menu>
+		<button mat-icon-button color="primary" class="mat-elevation-z4" [matMenuTriggerFor]="user">
+			<mat-icon matTooltip="user">personas</mat-icon>
+		</button>
+	</div>
+</mat-toolbar>
+<div *ngIf="!amIOnline" fxLayout="row" fxLayoutAlign="center center">
+	<span class="font_12 clrred" style="margin-top:10px;">You are offline</span>
+</div>

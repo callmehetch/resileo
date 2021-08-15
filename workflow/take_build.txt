@@ -1,0 +1,36 @@
+Replace 20200701
+
+notepad++ E:\Ramkumar\workspace_github\Workflow\package.json
+notepad++ E:\Ramkumar\workspace_github\Workflow\workflow-ui\package.json
+
+
+cd /D E:\Ramkumar\workspace_github\Workflow
+rem xcopy /E node_modules E:\Ramkumar\Projects\Workflow\build\20200701\workflow_ui\node_modules\
+xcopy /E routes E:\Ramkumar\Projects\Workflow\build\20200701\workflow_ui\routes\
+xcopy /E config E:\Ramkumar\Projects\Workflow\build\20200701\workflow_ui\config\
+xcopy workflow.js E:\Ramkumar\Projects\Workflow\build\20200701\workflow_ui\
+xcopy log.js E:\Ramkumar\Projects\Workflow\build\20200701\workflow_ui\
+xcopy package.json E:\Ramkumar\Projects\Workflow\build\20200701\workflow_ui\
+
+cd workflow-ui
+ng build --prod
+	Date: 2019-03-29T06:25:25.109Z
+	Hash: 1d6b083dbb879e835a1e
+	Time: 133944ms
+	chunk {0} runtime.a66f828dca56eeb90e02.js (runtime) 1.05 kB [entry] [rendered]
+	chunk {1} styles.edbfe528a442ee691648.css (styles) 190 kB [initial] [rendered]
+	chunk {2} polyfills.ed4290ea0d5de4acdcd7.js (polyfills) 59.8 kB [initial] [rendered]
+	chunk {3} main.c7a966f72d9fc011249e.js (main) 1.2 MB [initial] [rendered]
+
+cd ..
+rem xcopy /E "workflow-ui\node_modules" E:\Ramkumar\Projects\Workflow\build\20200701\workflow_ui\workflow-ui\node_modules
+xcopy /E "workflow-ui\dist" E:\Ramkumar\Projects\Workflow\build\20200701\workflow_ui\workflow-ui\dist\
+xcopy "workflow-ui\package.json" E:\Ramkumar\Projects\Workflow\build\20200701\workflow_ui\workflow-ui\
+
+
+## tar.gz
+
+cd E:\Ramkumar\Projects\Workflow\build\
+"c:\Program Files\7-Zip\7z.exe" a -ttar -so Workflow_20200701.tar E:\Ramkumar\Projects\Workflow\build\20200701 | "c:\Program Files\7-Zip\7z.exe" a -si workflow_20200701.tar.gz
+
+explorer E:\Ramkumar\Projects\Workflow\build\

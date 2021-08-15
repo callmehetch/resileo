@@ -1,0 +1,93 @@
+<div fxLayout="row" [fxLayoutAlign]="formlayoutalign" fxLayoutGap="20px" [style.height.px]="height">
+	<mat-card class="mat-elevation-z8" style="padding:48px"> 
+		<div fxLayout="row wrap" fxLayoutAlign="start center">
+			<img src="../../assets/image/adqvest_small.png" matTooltip="Adqvest" style="width:60px; height:auto"/>
+			<div class="fntrc20 mgnleft10">REGISTER FOR FREE TRIAL</div>
+		</div>
+		<mat-card-content style="margin-top:10px">
+			<form [formGroup]="form" fxLayout="column" class="mcctop16px">
+				<div fxLayout="column">
+					<label>Email</label>
+					<div fxLayout="row" fxLayoutAlign="start center">
+						<input class="inputbox" placeholder="Enter your email" formControlName="email" name="email" id="email" readonly="readonly" onfocus="javascript: this.removeAttribute('readonly')" (blur)="validateEmailSignUp()" required>
+						<button *ngIf="checkEmail && form.get('email').dirty" mat-icon-button ><mat-icon class="md-20 clrgreen" matTooltip="Valid Email">check_circle</mat-icon></button>
+						<button *ngIf="!checkEmail && form.get('email').dirty" mat-icon-button ><mat-icon class="md-20 clrred" matTooltip="Email already exist or invalid email">error</mat-icon></button>
+					</div>
+					<mat-error *ngIf="form.get('email').invalid && form.get('email').dirty" class="font_12" style="width:280px">{{getErrorMessage(form.get('email'),'email')}}</mat-error>
+				</div>
+				<div fxLayout="column">
+					<label>Full Name</label>
+					<div fxLayout="row" fxLayoutAlign="start center">
+						<input class="inputbox" placeholder="Enter your full name" formControlName="name" name="name" id="name" required>
+						<button mat-icon-button style="cursor: default;" ><mat-icon class="md-20" ></mat-icon></button>
+					</div>
+					<mat-error *ngIf="form.get('name').invalid && form.get('name').dirty" class="font_12" style="width:300px">{{getErrorMessage(form.get('name'),'name')}}</mat-error>
+				</div>
+				<div fxLayout="column">
+					<label>Password</label>
+					<div fxLayout="row" fxLayoutAlign="start center">
+						<input class="inputbox" placeholder="Enter password" formControlName="password" [type]="phide ? 'password':'text'" name="password" id="password">
+						<button mat-icon-button (click)="phide=!phide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="phide"><mat-icon class="md-20">{{phide?'visibility_off':'visibility'}}</mat-icon></button>
+					</div>
+				</div>
+				<div fxLayout="column">
+					<label>Confirm Password</label>
+					<div fxLayout="row" fxLayoutAlign="start center">
+						<input class="inputbox" placeholder="Confirm Password" formControlName="confirm" [type]="cphide ? 'password':'text'" name="confirm" id="confirm">
+						<button mat-icon-button (click)="cphide=!cphide" [attr.aria-label]="'Hide confirm password'" [attr.aria-pressed]="cphide"><mat-icon class="md-20">{{cphide ? 'visibility_off':'visibility'}}</mat-icon></button>
+					</div>
+				</div>
+				<mat-label class="font_12 clrred" style="width:280px">{{getErrorMessage(form,'form')}}</mat-label>
+				<div fxLayout="row" fxLayoutAlign="start center" class="mgntop10">
+					<mat-checkbox formControlName="PrivacyPolicy" color="primary">I agree to </mat-checkbox>
+					<span class="pointer clrblue mgnleft5"><u>privacy policy & terms</u></span>
+				</div>
+			</form>
+		</mat-card-content>
+		<mat-card-actions>
+			<div fxLayout="column" fxLayoutAlign="center start">
+				<button id="btnReqPass" [disabled]="form.invalid || !form.get('PrivacyPolicy').value" mat-raised-button  class="fntwt600 btnbgclr" (click)="register()">SIGN UP</button>
+				<div class="mat-typography">Already have an account?<button mat-button class="clrblue" [routerLink]="['/login']">Sign in</button></div>
+			</div>
+		</mat-card-actions>
+	</mat-card>
+</div>
+				<!--
+				<mat-tab-group>
+				<mat-tab label="Individual">
+				</mat-tab>
+				<mat-tab label="Enterprise">
+					<div style="height:340px">
+						<form [formGroup]="form" fxLayout="column" style="padding:0 14px">
+							<mat-form-field >
+								<div fxLayout="row">
+								<input matInput placeholder="Admin Email" formControlName="email" name="email" id="email" readonly="readonly" onfocus="javascript: this.removeAttribute('readonly')" (blur)="validateEmailSignUp()" required>
+								<span *ngIf="checkEmail" fxLayoutAlign="right"><mat-icon class="font_20 clrgreen"  matTooltip="Valid Email">check_circle</mat-icon></span>
+								<span *ngIf="!checkEmail" fxLayoutAlign="right"><mat-icon class="font_20" color="warn" matTooltip="Email already exist">cancel</mat-icon></span>
+								</div>
+								<mat-error *ngIf="form.get('email').invalid">{{getErrorMessage(form.get('email'),'email')}}</mat-error>
+							</mat-form-field>
+							<mat-form-field>
+								<input matInput placeholder="Company Name" formControlName="name" name="name" id="name" required>
+								<mat-error *ngIf="form.get('name').invalid">{{getErrorMessage(form.get('name'),'name')}}</mat-error>
+							</mat-form-field>
+							<mat-form-field>
+								<input matInput placeholder="Password" formControlName="password" [type]="phide ? 'password' : 'text'" name="password" id="password" required>
+								<button mat-icon-button matSuffix (click)="phide = !phide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="phide">
+									<mat-icon>{{phide ? 'visibility_off' : 'visibility'}}</mat-icon>
+								</button>
+							</mat-form-field>
+							<mat-form-field>
+								<input matInput placeholder="Confirm Password" formControlName="confirm" [type]="cphide ? 'password' : 'text'" name="confirm" id="confirm" required>
+								<button mat-icon-button matSuffix (click)="cphide = !cphide" [attr.aria-label]="'Hide confirm password'" [attr.aria-pressed]="cphide">
+								<mat-icon>{{cphide ? 'visibility_off' : 'visibility'}}</mat-icon>
+								</button>
+							</mat-form-field>
+							<mat-label class="clrred">{{getErrorMessage(form,'form')}}</mat-label>
+							<div fxLayout="row" fxLayoutAlign="start center">
+								<div class="font_12 mgntop20 mat-typography" style="text-align: justify; width:300px">By creating an account, you agree to the <span class="clrblue pointer" (click)="orgprofile('billing')">Corporate Terms of Service.</span> For more information about ADQVest privacy practices, see the <span class="clrblue pointer" (click)="orgprofile('billing')">ADQVest Privacy Statement</span>. We'll occasionally send you account-related emails.</div>
+							</div>
+						</form>
+					</div>
+				</mat-tab>
+			</mat-tab-group> -->

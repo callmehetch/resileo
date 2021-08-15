@@ -1,0 +1,51 @@
+Replace: 20200701
+
+
+cd /mnt/workflow/setup/
+
+ls -lh
+rm -Rf 202006*
+rm workflow_202006*.tar.gz
+
+
+# in Test, for prod upgrade
+sudo cp workflow_20200701.tar.gz /var/lib/apache-tomcat-7.0.55/webapps/download/
+
+# in Prod
+curl "https://test-collector.appedo.com/download/workflow_20200701.tar.gz" --output workflow_20200701.tar.gz
+
+# in Test, for Test build
+sudo mv /tmp/workflow_20200701.tar.gz .
+
+sudo tar -zxvf workflow_20200701.tar.gz
+
+# sudo rm -Rf workflow/node_modules
+sudo rm -Rf workflow/config
+sudo rm -Rf workflow/routes
+sudo rm -f workflow/workflow.js
+sudo rm -f workflow/log.js
+sudo rm -f workflow/package.json
+sudo rm -Rf workflow/workflow-ui/dist
+# sudo rm -Rf workflow/workflow-ui/node_modules
+sudo rm -f workflow/workflow-ui/package.json
+
+# sudo mv 20200701/workflow_ui/node_modules workflow/
+sudo mv 20200701/workflow_ui/config workflow/
+sudo mv 20200701/workflow_ui/routes workflow/
+sudo mv 20200701/workflow_ui/workflow.js workflow/
+sudo mv 20200701/workflow_ui/log.js workflow/
+sudo mv 20200701/workflow_ui/package.json workflow/
+# sudo mv 20200701/workflow_ui/workflow-ui/node_modules workflow/workflow-ui
+sudo mv 20200701/workflow_ui/workflow-ui/dist workflow/workflow-ui
+sudo mv 20200701/workflow_ui/workflow-ui/package.json workflow/workflow-ui
+
+vi workflow/workflow.js
+vi workflow/config/constants.js
+
+ps -eaf | grep workflow
+
+kill -9 
+
+cd /mnt/workflow/setup/workflow/
+nohup node workflow.js &
+

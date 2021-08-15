@@ -1,0 +1,103 @@
+<div mat-dialog-title class="bdrbtm1px" fxLayout="row" fxLayoutAlign="space-between center">
+    <mat-icon color="primary">settings</mat-icon>    
+    <mat-label color="primary" class="mgnleft10">View Chart</mat-label>
+    <mat-icon id="close" color="warn" class="pointer" matTooltip="Close dialog" (click)="onClose()">cancel</mat-icon>
+</div>
+<div mat-dialog-content id="viewchartdialog" [style.height.px]="height">
+    <div  fxLayout="row" fxLayoutAlign="space-between center">
+        <div class="mgntop5 capitalize mgnbtm10 mgnleft10 nowordwrap fntrc20" style="width:90%">{{data.chart.title}}
+        </div>
+        <button *ngIf="!isLoading && !isSaveMode" color="primary" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Open Charts">
+            <mat-icon>auto_graph</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu" >
+            <button mat-menu-item (click)="chartType='table';data.chart.query_param['root_chart_type']='table';">
+                <mat-icon>table_chart</mat-icon>
+                <span>Table</span>
+            </button>
+            <button mat-menu-item (click)="chartType='line';data.chart.query_param['root_chart_type']='others'; drawChart()">
+                <mat-icon>show_chart</mat-icon>
+                <span>Line</span>
+            </button>
+            <button mat-menu-item (click)="chartType='vbar';data.chart.query_param['root_chart_type']='others'; drawChart()">
+                <mat-icon>bar_chart</mat-icon>
+                <span>Bar Chart</span>
+            </button>
+            <button mat-menu-item (click)="chartType='area';data.chart.query_param['root_chart_type']='others';drawChart()">
+                <mat-icon>area_chart</mat-icon>
+                <span>Area Chart</span>
+            </button>
+        </mat-menu>
+        <span><mat-icon color="primary" matTooltip="{{data.chart.description}}">info</mat-icon></span>
+    </div>
+    <div *ngIf="!isSaveMode">
+        <div *ngIf="data.chart.query_param?.root_chart_type!='table' && data.chart?.query_param?.data?.length>0" id="{{data.chart.widget_id}}" appD3chartsv3 [chartdata]="chartToDisplay" [width]="width-64" [height]="height-80" [chartType]="data.chart.query_param?.root_chart_type" [editMode]=false (onChartOutput)="fromD3chart($event)" [changeData]="svgData" [theme]="theme" [style.width.px]="width-64" [style.height.px]="height-80"></div>
+        <div *ngIf="data.chart.query_param?.root_chart_type=='table' && tblResult.data.length>0" style="overflow-y: auto;  margin-top:18px; " [style.height.px]="height-64">
+            <table mat-table #table [dataSource]="tblResult" matSort style="border:1px lightgray solid; border-radius: 10px; width:100%">
+                <div *ngFor="let col of dispCols">
+                    <ng-container matColumnDef="{{col}}">
+                        <th mat-header-cell class="tbl-head" *matHeaderCellDef mat-sort-header >{{col.replace('_',' ')}}</th>
+                        <td mat-cell class="font_12 tbl-row-pad"*matCellDef="let element">
+                            <span *ngIf="data.chart.query_param?.data_type_coll[col]=='datetime'">{{element[col]|date:'medium'}}</span>
+                            <span *ngIf="data.chart.query_param?.data_type_coll[col]!='datetime'">{{element[col]}}</span>
+                        </td>
+                    </ng-container>
+                </div>
+                <tr mat-header-row *matHeaderRowDef="dispCols; sticky: true;" class="tblrowht"></tr>
+                <tr mat-row class="tr-rowalt-light" *matRowDef="let row; columns: dispCols;"></tr>
+            </table>
+        </div>
+    </div>
+    <div *ngIf="isSaveMode">
+        <div  fxLayout="row" fxLayoutAlign="center center" >
+            <form [formGroup]="form" fxLayout="row wrap" class="mcctop16px mat-elevation-z0" style="background-color: white; padding:48px; border-radius: 7px;">
+                <div fxLayout="column" fxFlex="45">
+                    <label>Sector<span class="clrred">*</span></label>
+                    <mat-select fxFlex="initial" formControlName="Sector" placeholder="Select the Sector" required class="inputbox" style="width:280px">
+                        <mat-option *ngFor="let sector of sectorColl" [value]="sector">{{sector.display_name}}</mat-option>
+                    </mat-select>
+                </div>
+                <div fxLayout="column" fxFlex="45">
+                    <label>Widget Name<span class="clrred">*</span></label>
+                    <div fxLayout="row" fxLayoutAlign="start center">
+                        <input class="inputbox" placeholder="Enter widget name" name="name" id="name" formControlName="Name" required>
+                    </div>
+                    <mat-error *ngIf="form.get('Name').invalid && form.get('Name').dirty" class="font_12" style="width:280px">{{getErrorMessage(form.get('Name'),'Name')}}</mat-error>
+                </div>
+                <div fxLayout="column" fxFlex="45">
+                    <label>Short Name<span class="clrred">*</span></label>
+                    <div fxLayout="row" fxLayoutAlign="start center">
+                        <input class="inputbox" placeholder="Enter widget short name" name="ShortName" id="ShortName" formControlName="ShortName" required>
+                    </div>
+                    <mat-error *ngIf="form.get('ShortName').invalid && form.get('ShortName').dirty" class="font_12" style="width:280px">{{getErrorMessage(form.get('ShortName'),'ShortName')}}</mat-error>
+                    <mat-hint *ngIf="!form.get('ShortName').dirty || form.get('ShortName').valid" class="font_12">Used for Mobile Devices</mat-hint>
+                </div>
+                <div fxLayout="column" fxFlex="45">
+                    <label>Description<span class="clrred">*</span></label>
+                    <div fxLayout="row" fxLayoutAlign="start center">
+                        <textarea cdkTextareaAutosize class="inputbox" placeholder="Enter Description" name="Description" id="Description" formControlName="Description" required></textarea>
+                    </div>
+                    <mat-error *ngIf="form.get('Description').invalid && form.get('Description').dirty" class="font_12" style="width:280px">{{getErrorMessage(form.get('Description'),'Description')}}</mat-error>
+                </div>
+                <div fxLayout="column" fxFlex="45">
+                    <label>Additional Tags</label>
+                    <div fxLayout="row" fxLayoutAlign="start center">
+                        <textarea cdkTextareaAutosize class="inputbox" placeholder="Enter Tags" name="Tags" id="Tags" formControlName="Tags"></textarea>
+                    </div>
+                </div>
+                <div fxLayout="column">
+                    <mat-hint class="font_12 fntwt600" style="width:280px"><span class="clrred">*</span>Name, short name, description and tags are converted into lexemes. Used for Search</mat-hint>
+                    <div>
+                        <button *ngIf="form.valid" mat-raised-button class="btnbgclr" (click)="save()">Save</button>
+                        <button *ngIf="form.invalid" disabled mat-raised-button class="btnbgclr" >Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div *ngIf="!isSaveMode" mat-dialog-actions fxLayout="row wrap" fxLayoutAlign="space-around center">
+    <button id="cancel" mat-raised-button class="btnbgclr" (click)="onClose()">Cancel</button>
+    <button *ngIf="!isLoading" id="{{nxtAction}}" class="btnbgclr" mat-raised-button (click)="changeStatus(nxtAction)">{{nxtAction=='ready'?'Draft->Complete':nxtAction=='approve'?'Complete->Approve':nxtAction=='publish'?'Approve->Publish':'Published'}}</button>
+    <button *ngIf="isLoading" id="{{nxtAction}}" disabled mat-raised-button ><mat-icon class="fa-spin">wb_sunny</mat-icon></button>
+</div>

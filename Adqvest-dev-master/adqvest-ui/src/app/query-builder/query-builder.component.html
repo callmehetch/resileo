@@ -1,0 +1,224 @@
+<app-login-header></app-login-header>
+<mat-card [style.height.px]="height-100">
+	<mat-card-title>
+		<div fxLayout="row" fxLayoutAlign="space-between center">
+			<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+				<mat-icon id="arrowgoback" class="mgnleft10 pointer" matTooltip="Back" (click)="goBack()">arrow_back_ios</mat-icon>
+				<div class="fntrc20">Query Builder</div>
+			</div>
+			<button *ngIf="isGrid" mat-raised-button color="primary" (click)="isGrid=false;getTables()"><mat-icon>add_circle</mat-icon><span class="mgnleft10">Add New</span></button>
+			<button *ngIf="!isGrid && !isLoading" mat-raised-button color="primary" (click)="isGrid=true;resetFields()"><mat-icon>table_chart</mat-icon><span class="mgnleft10">Query Grid</span></button>
+		</div>
+	</mat-card-title>
+	<mat-card-content fxLayoutAlign="start start">
+		<mat-sidenav-container *ngIf="!isGrid" fxFlex="100" fxFlex.md="100" fxFlex.sm="100" fxFlex.xs="100" [style.height.px]="height-125" hasBackdrop='false' style="overflow-y: auto;">
+			<mat-sidenav #sidenav mode="side" [opened]="isOpen" style="width:210px; z-index: 0;" >
+				<mat-list style="width:98%">
+					<div *ngIf="selList=='qb'" class="mgntop20">
+						<div class="fntrc14">Available Tables</div>
+						<mat-form-field>
+							<mat-select placeholder="Table" [(ngModel)]="tableSel"  name="tableSel" class="capitalize" (selectionChange)="getColDef()">
+								<mat-option *ngFor="let table of tableColl" [value]="table.name" >
+									<span class="font_12" matTooltip="{{table.name}}">{{table.name}}</span>
+								</mat-option>
+							</mat-select>
+						</mat-form-field>
+						<div class="fntrc14 mgntop10">Column(type)</div>
+						<div *ngFor="let col of colColl" style="padding:2px 0px">{{col.name}} ({{col.type}})</div>
+					</div>
+				</mat-list>
+			</mat-sidenav>
+			<mat-sidenav-content style="background-color: white;">
+				<mat-card [style.height.px]="height-170" class="mat-elevation-z0" style="padding-top: 0px;" >
+					<mat-card-content>
+						<div>Query</div>
+						<textarea cdkTextareaAutosize id="idQuery" placeholder="Type your query here" style="width:100%; min-height:50px; outline: none;" [(ngModel)]="query" (keyup)="validateQuery()"></textarea>
+						<mat-error *ngIf="qryError" class="font_12">{{qryError}}</mat-error>
+						<div *ngIf="!qryError && query!=undefined" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="20px">
+							<button *ngIf="!isLoading" class="btnbgclr" mat-raised-button (click)="isLoading=true; execQry()">Exec</button>
+							<button *ngIf="isLoading" class="clrblue" style="opacity:0.5" mat-icon-button ><mat-icon class="fa-spin">wb_sunny</mat-icon></button>
+							<mat-icon *ngIf="tblResult?.data.length>0 && !isLoading" color="primary" (click)="openConfigColumn()" class="pointer" matTooltip="Configure Columns">settings</mat-icon>
+							<button *ngIf="tblResult?.data.length>0  && !isLoading" color="primary" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Open Charts">
+								<mat-icon>auto_graph</mat-icon>
+							</button>
+							<mat-menu #menu="matMenu" >
+								<button mat-menu-item (click)="chartType='table';widget['root_chart_type']='table';">
+									<mat-icon>table_chart</mat-icon>
+									<span>Table</span>
+								</button>
+								<button mat-menu-item (click)="chartType='line';widget['root_chart_type']='others'; setChartParam(tblResult.data)">
+									<mat-icon>show_chart</mat-icon>
+									<span>Line</span>
+								</button>
+								<button mat-menu-item (click)="chartType='vbar';widget['root_chart_type']='others'; setChartParam(tblResult.data)">
+									<mat-icon>bar_chart</mat-icon>
+									<span>Bar Chart</span>
+								</button>
+								<button mat-menu-item (click)="chartType='area';widget['root_chart_type']='others';setChartParam(tblResult.data)">
+									<mat-icon>area_chart</mat-icon>
+									<span>Area Chart</span>
+								</button>
+							</mat-menu>
+							<button *ngIf="tblResult?.data.length>0 && !isLoading" color="primary" mat-icon-button aria-label="save Charts" (click)="savemenu=true;">
+								<mat-icon>save</mat-icon>
+							</button>
+							<div *ngIf="savemenu" style="display: block; padding-top:25px"class="apdmodal">
+								<div  fxLayout="row" fxLayoutAlign="center center" >
+									<form [formGroup]="form" fxLayout="column" class="mcctop16px mat-elevation-z12" style="background-color: white; padding:48px; border-radius: 7px;">
+										<div fxLayout="row" fxLayoutAlign="space-between center">
+											<div class="fntrc20">Save Widget</div>
+											<mat-icon class="clrred pointer" (click)="savemenu=false;">cancel</mat-icon>
+										</div>
+										<div fxLayout="column">
+											<label>Sector<span class="clrred">*</span></label>
+											<mat-select fxFlex="initial" formControlName="Sector" placeholder="Select the Sector" required class="inputbox">
+												<mat-option *ngFor="let sector of sectorColl" [value]="sector">{{sector.display_name}}</mat-option>
+											</mat-select>
+										</div>
+										<div fxLayout="column">
+											<label>Widget Name<span class="clrred">*</span></label>
+											<div fxLayout="row" fxLayoutAlign="start center">
+												<input class="inputbox" placeholder="Enter widget name" name="name" id="name" formControlName="Name" required>
+											</div>
+											<mat-error *ngIf="form.get('Name').invalid && form.get('Name').dirty" class="font_12" style="width:280px">{{getErrorMessage(form.get('Name'),'Name')}}</mat-error>
+										</div>
+										<div fxLayout="column">
+											<label>Short Name<span class="clrred">*</span></label>
+											<div fxLayout="row" fxLayoutAlign="start center">
+												<input class="inputbox" placeholder="Enter widget short name" name="ShortName" id="ShortName" formControlName="ShortName" required>
+											</div>
+											<mat-error *ngIf="form.get('ShortName').invalid && form.get('ShortName').dirty" class="font_12" style="width:280px">{{getErrorMessage(form.get('ShortName'),'ShortName')}}</mat-error>
+											<mat-hint *ngIf="!form.get('ShortName').dirty || form.get('ShortName').valid" class="font_12">Used for Mobile Devices</mat-hint>
+										</div>
+										<div fxLayout="column">
+											<label>Description<span class="clrred">*</span></label>
+											<div fxLayout="row" fxLayoutAlign="start center">
+												<textarea cdkTextareaAutosize class="inputbox" placeholder="Enter Description" name="Description" id="Description" formControlName="Description" required></textarea>
+											</div>
+											<mat-error *ngIf="form.get('Description').invalid && form.get('Description').dirty" class="font_12" style="width:280px">{{getErrorMessage(form.get('Description'),'Description')}}</mat-error>
+										</div>
+										<div fxLayout="column">
+											<label>Additional Tags</label>
+											<div fxLayout="row" fxLayoutAlign="start center">
+												<textarea cdkTextareaAutosize class="inputbox" placeholder="Enter Tags" name="Tags" id="Tags" formControlName="Tags"></textarea>
+											</div>
+										</div>
+										<mat-hint class="font_12 fntwt600" style="width:280px"><span class="clrred">*</span>Name, short name, description and tags are converted into lexemes. Used for Search</mat-hint>
+										<div>
+											<button *ngIf="form.valid" mat-raised-button class="btnbgclr" (click)="savemenu=false;save()">Save</button>
+											<button *ngIf="form.invalid" disabled mat-raised-button class="btnbgclr" >Save</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<div *ngIf="chartType=='table' && tblResult.data.length>0" style="overflow-y: auto;  margin-top:18px; height: 100%;">
+							<table mat-table #table [dataSource]="tblResult" matSort style="border:1px lightgray solid; border-radius: 10px; width:100%">
+								<div *ngFor="let col of dispCols">
+									<ng-container matColumnDef="{{col}}">
+										<th mat-header-cell class="tbl-head" *matHeaderCellDef mat-sort-header >{{col.replace('_',' ')}}</th>
+										<td mat-cell class="font_12 tbl-row-pad"*matCellDef="let element">
+											<span *ngIf="columnAndType[col].col_type=='datetime'">{{element[col]|date:'medium'}}</span>
+											<span *ngIf="columnAndType[col].col_type!='datetime'">{{element[col]}}</span>
+										</td>
+									</ng-container>
+								</div>
+								<tr mat-header-row *matHeaderRowDef="dispCols; sticky: true;" class="tblrowht"></tr>
+								<tr mat-row class="tr-rowalt-light" *matRowDef="let row; columns: dispCols;"></tr>
+							</table>
+						</div>
+						<section *ngIf="chartType!='table'">
+                            <div id="{{id}}" appD3chartsv3 [chartdata]="chartToDisplay" [width]="chartWidth-30" [height]="chartHt-140" [chartType]="chartToDisplay['root_chart_type']" [editMode]=false (onChartOutput)="fromD3chart($event)" [changeData] = "svgData" [style.width.px]="chartWidth-30" [style.height.px]="chartHt-140">
+                            </div>
+                        </section>
+					</mat-card-content>
+					<mat-card-actions>
+					</mat-card-actions>
+				</mat-card>
+			</mat-sidenav-content>
+		</mat-sidenav-container>
+		<div *ngIf="isGrid" fxLayout="column" style="width:100%">
+			<mat-radio-group aria-label="Select an option" style="padding-left:20px" color="primary" (change)="onChange($event.value)">
+				<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="20px">
+					<mat-radio-button checked value="mc">My Charts</mat-radio-button>
+					<mat-radio-button value="ac">All Charts</mat-radio-button>
+					<mat-radio-button value="pa">Pending For Approval</mat-radio-button>
+					<mat-radio-button value="pp">Pending For Publish</mat-radio-button>
+				</div>
+			</mat-radio-group>		
+			<div [style.height.px]="height-160" style="overflow-y: auto;width:100%" class="mgntop10" >
+				<table mat-table #table [dataSource]="widgetColl" matSort style="border:1px lightgray solid; border-radius: 10px; width:100%">
+					<ng-container matColumnDef="delete">
+						<th class="tbl-head" mat-header-cell *matHeaderCellDef></th>   
+						<td class="font_12 tbl-row-pad" mat-cell *matCellDef="let element; let i=index ">
+							<mat-icon id="removeusr{{i}}" color="warn" class="pointer" matTooltip="Remove Chart" (click)="delChart(element)">delete</mat-icon>
+							<mat-icon *ngIf="userDet.user_id!=element.created_by" color="accent" matTooltip="Only owner can edit" >delete_forever</mat-icon>
+						</td>
+					</ng-container>
+					<ng-container matColumnDef="edit">
+						<th class="tbl-head" mat-header-cell *matHeaderCellDef></th>   
+						<td class="font_12 tbl-row-pad" mat-cell *matCellDef="let element; let i=index ">
+							<mat-icon id="removeusr{{i}}" color="primary" class="pointer" matTooltip="Edit Chart" (click)="editChart(element)">edit</mat-icon>
+							<mat-icon *ngIf="userDet.user_id!=element.created_by" color="primary" matTooltip="Only owner can delete" >edit_off</mat-icon>
+						</td>
+					</ng-container>
+					<ng-container matColumnDef="approve">
+						<th class="tbl-head" mat-header-cell *matHeaderCellDef></th>   
+						<td class="font_12 tbl-row-pad" mat-cell *matCellDef="let element; let i=index ">
+							<mat-icon *ngIf="!element.is_ready && !element.is_approved && !element.is_published" id="approve{{i}}" color="primary" class="pointer" matTooltip="Click to set status to Ready" (click)="openViewChart(element,'ready')">article</mat-icon>
+							<mat-icon *ngIf="element.is_ready && !element.is_approved && !element.is_published" id="approve{{i}}" color="primary" class="pointer" matTooltip="Approve" (click)="openViewChart(element,'approve')">check_circle</mat-icon>
+							<mat-icon *ngIf="element.is_ready && element.is_approved && !element.is_published" id="approve{{i}}" color="primary" class="pointer" matTooltip="Publish" (click)="openViewChart(element,'publish')">gpp_good</mat-icon>
+							<mat-icon *ngIf="element.is_ready && element.is_approved && element.is_published" id="approve{{i}}" color="primary" class="pointer" matTooltip="Published">cloud_done</mat-icon>
+						</td>
+					</ng-container>
+					<ng-container matColumnDef="title">
+						<th class="tbl-head" mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+						<td mat-cell class="font_12 tbl-row-pad" *matCellDef="let element">
+							<span [matMenuTriggerFor]="showDes">{{element.title}}</span>
+							<mat-menu #showDes="matMenu" >
+								<div style="padding:15px;">
+									<div class="fntrc14">Short Name</div>
+									<div style="max-width:200px" class="font_12 capitalize">{{element.short_name}}</div>
+									<div class="mgntop20 fntrc14">Description</div>
+									<div style="max-width:200px" class="font_12 capitalize">{{element.description}}</div>
+									<div class="mgntop20 fntrc14">Tags</div>
+									<div style="max-width:200px" class="font_12 capitalize">{{element.tags}}</div>
+								</div>
+							</mat-menu>
+						</td>
+					</ng-container>
+					<ng-container matColumnDef="sector">
+						<th  class="tbl-head" mat-header-cell *matHeaderCellDef mat-sort-header>Sector</th>
+						<td mat-cell class="font_12 tbl-row-pad" *matCellDef="let element">{{element.sector}}</td>
+					</ng-container>
+					<ng-container matColumnDef="status">
+						<th class="tbl-head" mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+						<td mat-cell class="font_12 tbl-row-pad" *matCellDef="let element">{{element.is_published?'Published':element.is_approved?'Approved':element.is_ready?'Ready':'Draft'}}</td>
+					</ng-container>
+					<ng-container matColumnDef="author">
+						<th  class="tbl-head" mat-header-cell *matHeaderCellDef mat-sort-header>Author</th>
+						<td mat-cell class="font_12 tbl-row-pad" *matCellDef="let element">{{element.author}}</td>
+					</ng-container>
+					<ng-container matColumnDef="created_on">
+						<th class="tbl-head" mat-header-cell *matHeaderCellDef mat-sort-header>Created On</th>
+						<td mat-cell class="font_12 tbl-row-pad" *matCellDef="let element">{{element.created_on|date:'dd-MMM-yyyy'}}</td>
+					</ng-container>
+					<ng-container matColumnDef="approver">
+						<th class="tbl-head" mat-header-cell *matHeaderCellDef mat-sort-header>Approver</th>
+						<td mat-cell class="font_12 tbl-row-pad" *matCellDef="let element">{{element.approver}}</td>
+					</ng-container>
+					<ng-container matColumnDef="publisher">
+						<th class="tbl-head" mat-header-cell *matHeaderCellDef mat-sort-header>Publisher</th>
+						<td mat-cell class="font_12 tbl-row-pad" *matCellDef="let element">{{element.publisher}}</td>
+					</ng-container>
+					<ng-container matColumnDef="published_on">
+						<th class="tbl-head" mat-header-cell *matHeaderCellDef mat-sort-header>Published On</th>
+						<td mat-cell class="font_12 tbl-row-pad" *matCellDef="let element">{{element.published_on|date:'dd-MMM-yyyy'}}</td>
+					</ng-container>
+					<tr mat-header-row *matHeaderRowDef="dispWidget; sticky: true;"></tr>
+					<tr mat-row  *matRowDef="let row; columns: dispWidget;"></tr>
+				</table>  
+			</div>
+		</div>
+	</mat-card-content>
+</mat-card>

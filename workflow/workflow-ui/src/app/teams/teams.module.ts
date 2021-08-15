@@ -1,0 +1,30 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { MaterialModule } from '../material'
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { TeamsRoutingModule } from './teams-routing.module';
+import { TeamsComponent } from './teams.component';
+import { HeaderModule } from '../header/header.module';
+import { FileUploadModule} from 'ng2-file-upload';
+
+
+@NgModule({
+  imports: [
+    CommonModule,
+    FormsModule, 
+    ReactiveFormsModule,
+    MaterialModule,
+    FlexLayoutModule,
+    TeamsRoutingModule,
+    HeaderModule,
+    FileUploadModule,
+  ],
+  declarations: [
+    TeamsComponent
+  ],
+  entryComponents: [
+  ],
+})
+export class TeamsModule { }
+

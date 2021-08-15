@@ -1,0 +1,103 @@
+<div *ngIf="height>=500">
+  <form fxLayout="row" fxLayoutAlign="center center" [formGroup]="form" [style.height.px]="height">
+    <mat-card fxFlex="25" fxFlex.md="35" fxFlex.sm="50" fxFlex.xs="90"> 
+      <mat-card-header fxLayout="row wrap" fxLayoutAlign="center center">
+        <div ><img src="../../assets/image/adqvest_small.png" style="width:40px; height:40px"/></div>
+        <div class="mgnleft10 font_20 fntwt600">ADQVest</div>
+      </mat-card-header>
+      <mat-card-content>
+        <div fxLayout="column">
+          <mat-form-field >
+            <div fxLayout="row">
+              <input matInput placeholder="Email" formControlName="email" name="email" id="email" readonly="readonly" onfocus="javascript: this.removeAttribute('readonly')" (blur)="validateEmailSignUp()" required>
+              <span *ngIf="checkEmail" fxLayoutAlign="right"><mat-icon class="font_20 clrgreen"  matTooltip="Valid Email">check_circle</mat-icon></span>
+              <span *ngIf="!checkEmail" fxLayoutAlign="right"><mat-icon class="font_20" color="warn" matTooltip="Email already exist">cancel</mat-icon></span>
+            </div>
+            <mat-error *ngIf="form.get('email').invalid">{{getErrorMessage(form.get('email'),'email')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+              <input matInput placeholder="Fullname" formControlName="name" name="name" id="name" required>
+              <mat-error *ngIf="form.get('name').invalid">{{getErrorMessage(form.get('name'),'name')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+              <input matInput placeholder="Mobile No" formControlName="mobile_no" name="mobile_no" id="mobile_no" required>
+              <mat-error *ngIf="form.get('mobile_no').invalid">{{getErrorMessage(form.get('mobile_no'),'mobile_no')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+              <input matInput placeholder="Password" formControlName="password" [type]="phide ? 'password' : 'text'" name="password" id="password" required>
+              <button mat-icon-button matSuffix (click)="phide = !phide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="phide">
+                <mat-icon>{{phide ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="Confirm Password" formControlName="confirm" [type]="cphide ? 'password' : 'text'" name="confirm" id="confirm" required>
+            <button mat-icon-button matSuffix (click)="cphide = !cphide" [attr.aria-label]="'Hide confirm password'" [attr.aria-pressed]="cphide">
+              <mat-icon>{{cphide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+          </mat-form-field>
+          <mat-label class="clrred">{{getErrorMessage(form,'form')}}</mat-label>
+          <div fxLayout="row" fxLayoutAlign="start center">
+            <mat-checkbox color="primary">I agree to </mat-checkbox>
+            <span class="pointer clrblue mgnleft5"><u>privacy policy & terms</u></span>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <button id="btnReqPass" mat-raised-button style="background-color:rgb(255,239,0); width:100%" class="fntwt600" (click)="register()">SIGN UP</button>
+          <div>Already have an account?<button mat-button class="clrblue" [routerLink]="['/login2']">Sign in</button></div>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>
+<div *ngIf="height<500">
+  <form fxLayout="row" fxLayoutAlign="center start" [formGroup]="form" [style.height.px]="height">
+    <mat-card fxFlex="25" fxFlex.md="60" fxFlex.sm="80" fxFlex.xs="90"> 
+      <mat-card-header fxLayout="row wrap" fxLayoutAlign="center center">
+        <div ><img src="../../assets/image/adqvest_small.png" style="width:40px; height:40px"/></div>
+        <div class="mgnleft10 font_20 fntwt600">ADQVest</div>
+      </mat-card-header>
+      <mat-card-content>
+        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="20px">
+          <mat-form-field fxFlex="98">
+            <div fxLayout="row" >
+              <input matInput placeholder="Email" formControlName="email" name="email" id="email" readonly="readonly" onfocus="javascript: this.removeAttribute('readonly')" (blur)="validateEmailSignUp()" required>
+              <span *ngIf="checkEmail" fxLayoutAlign="right"><mat-icon class="font_20 clrgreen"  matTooltip="Valid Email">check_circle</mat-icon></span>
+              <span *ngIf="!checkEmail" fxLayoutAlign="right"><mat-icon class="font_20" color="warn" matTooltip="Email already exist">cancel</mat-icon></span>
+            </div>
+            <mat-error *ngIf="form.get('email').invalid">{{getErrorMessage(form.get('email'),'email')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlex="98">
+              <input matInput placeholder="Fullname" formControlName="name" name="name" id="name" required>
+              <mat-error *ngIf="form.get('name').invalid">{{getErrorMessage(form.get('name'),'name')}}</mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlex="45">
+              <input matInput placeholder="Password" formControlName="password" [type]="phide ? 'password' : 'text'" name="password" id="password" required>
+              <button mat-icon-button matSuffix (click)="phide = !phide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="phide">
+                <mat-icon>{{phide ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+          </mat-form-field>
+          <mat-form-field fxFlex="45">
+            <input matInput placeholder="Confirm Password" formControlName="confirm" [type]="cphide ? 'password' : 'text'" name="confirm" id="confirm" required>
+            <button mat-icon-button matSuffix (click)="cphide = !cphide" [attr.aria-label]="'Hide confirm password'" [attr.aria-pressed]="cphide">
+              <mat-icon>{{cphide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+          </mat-form-field>
+          <mat-label class="clrred">{{getErrorMessage(form,'form')}}</mat-label>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <mat-checkbox color="primary">I agree to </mat-checkbox>
+          <span class="pointer clrblue mgnleft5"><u>privacy new policy & terms</u></span>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <div fxLayout="column" fxLayoutAlign="center center">
+          <button id="btnReqPass" mat-raised-button style="background-color:rgb(255,239,0); width:100%" class="fntwt600" (click)="register()">SIGN UP</button>
+          <div>Already have an account?<button mat-button class="clrblue" [routerLink]="['/login2']">Sign in</button></div>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>
+

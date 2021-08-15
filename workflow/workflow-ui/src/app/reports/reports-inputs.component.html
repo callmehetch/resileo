@@ -1,0 +1,58 @@
+<!-- Loader section -->
+<div *ngIf="isLoading" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" class="apdmodal" style="display:block; ">
+    <mat-progress-spinner  color='primary' mode="indeterminate" value="50">
+    </mat-progress-spinner>
+</div>
+<div mat-dialog-title class="bdrbtm1px" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+    <mat-icon color="primary">{{titleIcon}}</mat-icon>
+    <mat-label class="mgnleft10">{{title}}</mat-label>
+    <mat-icon color="warn" class="pointer" matTooltip="Close dialog" (click)="onClose()">cancel</mat-icon>
+</div>
+<form  [formGroup]="form" >
+    <div mat-dialog-content>
+      <div fxFlex="45">
+        <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+          <mat-form-field fxFlex="45">
+            <mat-label>Choose start date</mat-label>
+            <input matInput [matDatepicker]="stdate" formControlName="FormStartDate" (dateChange)="changeDate('start',$event)" required>
+            <mat-datepicker-toggle matSuffix [for]="stdate"></mat-datepicker-toggle>
+            <mat-datepicker #stdate></mat-datepicker>
+            <mat-error *ngIf="form.get('FormStartDate').invalid">{{getErrorMessage(form.get('FormStartDate'),"FormStartDate")}}</mat-error>
+          </mat-form-field>
+          <mat-form-field fxFlex="45">
+            <mat-label>Choose end date</mat-label>
+            <input matInput [matDatepicker]="eddate" formControlName="FormEndDate" (dateChange)="changeDate('end',$event)" required>
+            <mat-datepicker-toggle matSuffix [for]="eddate"></mat-datepicker-toggle>
+            <mat-datepicker #eddate></mat-datepicker>
+            <mat-error *ngIf="form.get('FormEndDate').invalid">{{getErrorMessage(form.get('FormEndDate'),"FormEndDate")}}</mat-error>
+          </mat-form-field>
+        </div>
+        <div *ngIf="show_project_list" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+          <mat-form-field fxFlex="100">
+            <mat-select placeholder="Project List" formControlName="FormProjectList" name="FormProjectList" id="FormProjectList" (selectionChange)="resetProjectHier($event.value.project_code)">
+              <mat-option *ngFor="let ele of project_listColl" class="dropdown-item capitalize" matTooltip="{{ele.project_name}}" [value]="ele">{{ele.project_name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div *ngIf="show_key_list" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+          <mat-form-field fxFlex="100">
+            <mat-select placeholder="Key Result" formControlName="FormKeyList" name="FormKeyList" id="FormKeyList">
+              <mat-option *ngFor="let ele of key_resultsColl" class="dropdown-item capitalize" matTooltip="{{ele.suggestion_name}}" [value]="ele">{{ele.suggestion_name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div *ngIf="show_assigned_to" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+          <mat-form-field fxFlex="100">
+            <mat-select placeholder="Assigned To" formControlName="FormAssignedTo" name="FormAssignedTo" id="FormAssignedTo">
+              <mat-option *ngFor="let ele of assignedToUsersColl" class="dropdown-item capitalize" matTooltip="{{ele.user_name}}" [value]="ele">{{ele.user_name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+        <div fxFlex="5"></div>
+    </div>
+    <div mat-dialog-actions fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <button type="button" color="accent" mat-raised-button (click)="onClose()">Cancel</button>
+        <button *ngIf="!isLoading && form.valid" color="primary" mat-raised-button (click)="closeWithReturn()">Generate</button>
+    </div>
+</form>

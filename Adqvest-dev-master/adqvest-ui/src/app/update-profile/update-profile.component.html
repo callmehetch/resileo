@@ -1,0 +1,34 @@
+<app-login-header></app-login-header>
+<div>
+    <form [formGroup]="form" [style.height.px]="height-64" fxLayout="row" [fxLayoutAlign]="formLayoutAlign">
+        <mat-card fxFlex="30" fxFlex.md="40" fxFlex.sm="60" fxFlex.xs="90">
+            <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px" >
+                <img src="../../assets/image/adqvest_small.png" style="width:40px; height:auto"/>
+                <div class="fntrc20">Update Profile</div>
+            </div>
+            <mat-card-content class="mcctop32px">
+                <div></div>
+                <div fxLayout="column">
+					<label>Email Address</label>
+					<input [disabled] placeholder="Enter your email address" formControlName="email" class="inputbox"  required>
+				</div>
+				<div fxLayout="column">
+					<label>Full Name</label>
+                    <input class="inputbox" placeholder="Enter your full name" formControlName="name" name="name" id="name" required>
+					<mat-error *ngIf="form.get('name').invalid && form.get('name').dirty" class="font_12" style="width:300px">{{getErrorMessage(form.get('name'),'name')}}</mat-error>
+				</div>
+				<div fxLayout="column">
+					<label>Mobile</label>
+                    <input class="inputbox" placeholder="Enter your mobile number" formControlName="mobile_no" name="mobile_no" id="mobile_no" required>
+					<mat-error *ngIf="form.get('mobile_no').invalid && form.get('mobile_no').dirty" class="font_12" style="width:300px">{{getErrorMessage(form.get('mobile_no'),'mobile_no')}}</mat-error>
+				</div>
+            </mat-card-content>
+            <mat-card-actions>
+                <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
+                    <button id="btnReqPass" mat-raised-button class="fntwt600 btnbgclr"  (click)="UpdateProfile()">Update Profile</button>
+                    <button id="close" mat-raised-button style="width:119px" class="fntwt600" (click)="onClose()">Cancel</button>
+                </div>
+            </mat-card-actions>
+        </mat-card>
+    </form>
+</div>

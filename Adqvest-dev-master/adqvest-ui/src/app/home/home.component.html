@@ -1,0 +1,62 @@
+<app-login-header></app-login-header>
+<mat-card *ngIf="dispInviteScreen" [style.height.px]="height" fxLayout="column" fxLayoutAlign="start center">
+	<mat-card-title class="fntrc20">Pending Invitations</mat-card-title>
+	<mat-card-content>
+		<div >
+			<table mat-table #table [dataSource]="pendingInviteColl" matSort style="border:1px lightgray solid; border-radius: 10px; width:100%">
+				<ng-container matColumnDef="full_name">
+					<th mat-header-cell class="tbl-head " *matHeaderCellDef mat-sort-header>INVITED BY</th>
+					<td mat-cell class="font_12 tbl-row-pad"*matCellDef="let element">{{element.full_name}}</td>
+				</ng-container>
+				<ng-container matColumnDef="company_name">
+					<th mat-header-cell class="tbl-head " *matHeaderCellDef mat-sort-header>COMPANY NAME</th>
+					<td mat-cell class="font_12 tbl-row-pad"*matCellDef="let element">{{element.company_name}}</td>
+				</ng-container>
+				<ng-container matColumnDef="invited_on">
+					<th mat-header-cell class="tbl-head " *matHeaderCellDef mat-sort-header>DATE OF INVITE</th>
+					<td mat-cell class="font_12 tbl-row-pad"*matCellDef="let element">{{element.invited_on | date:'dd-MMM-yyyy'}}</td>
+				</ng-container>
+				<ng-container matColumnDef="is_accepted">
+					<th mat-header-cell class="tbl-head " *matHeaderCellDef mat-sort-header>ACCEPT</th>
+					<td mat-cell class="font_12 tbl-row-pad"*matCellDef="let element">
+							<mat-radio-button color="primary" [checked]="element.is_accepted" (change)="selOption(element)"></mat-radio-button>
+					</td>
+				</ng-container>
+				<tr mat-header-row *matHeaderRowDef="dispPendInvite; sticky: true;" class="tblrowht"></tr>
+				<tr mat-row class="tr-rowalt-light" *matRowDef="let row; columns: dispPendInvite;"></tr>
+			</table>
+			<div *ngIf="!enableMyAccount && dispInviteScreen" class="clrred mgntop10">*Need to update the pending invitations before moving to other pages.</div>
+		</div>
+	</mat-card-content>
+	<mat-card-actions>
+		<button *ngIf="isBtnValid" mat-raised-button class="fntwt600 btnbgclr" (click)="confirmInvite()">Submit</button>
+	</mat-card-actions>
+</mat-card>
+<mat-card>
+	<mat-card-content>
+		<div fxLayout="row wrap" fxLayoutAlign="start center">
+			<div *ngFor="let chart of chartColl; let i=index" [style.width.px]="width/3-10" [style.height.px]="chartHt" class="mat-elevation-z4 mgntop20 mgnrgt10">
+				<div class="mgnleft5 fntrc14 capitalize">{{chart.short_name}}</div>
+				<div *ngIf="chart.query_param?.root_chart_type!='table' && chart?.query_param?.data?.length>0" id="{{chart.widget_id}}" appD3chartsv3 [chartdata]="chartToDisplay[i]" [width]="width/3-10" [height]="chartHt-30" [chartType]="chart.query_param?.root_chart_type" [editMode]=false (onChartOutput)="fromD3chart($event)" [changeData]="svgData[i]" [theme]="theme" [style.width.px]="width/3-10" [style.height.px]="chartHt-30"></div>
+				<div *ngIf="chart.query_param?.root_chart_type=='table' && chart.query_param['tblData']?.data.length>0" style="overflow-y: auto;  margin-top:18px; " [style.height.px]="chartHt-30">
+					<table mat-table #table [dataSource]="chart.query_param['tblData']" matSort style="border:1px lightgray solid; border-radius: 10px; width:100%">
+						<div *ngFor="let col of chart.query_param['dispCols']">
+							<ng-container matColumnDef="{{col}}">
+								<th mat-header-cell class="tbl-head" *matHeaderCellDef mat-sort-header >{{col.replace('_',' ')}}</th>
+								<td mat-cell class="font_12 tbl-row-pad"*matCellDef="let element">
+									<span *ngIf="chart.query_param?.data_type_coll[col]=='datetime'">{{element[col]|date:'medium'}}</span>
+									<span *ngIf="chart.query_param?.data_type_coll[col]!='datetime'">{{element[col]}}</span>
+								</td>
+							</ng-container>
+						</div>
+						<tr mat-header-row *matHeaderRowDef="chart.query_param['dispCols']; sticky: true;" class="tblrowht"></tr>
+						<tr mat-row class="tr-rowalt-light" *matRowDef="let row; columns: chart.query_param['dispCols'];"></tr>
+					</table>
+				</div>
+				<div *ngIf="chart?.query_param?.data?.length==0 || isLoading[i]" fxLayoutAlign="center center" style="height:100%">
+					<mat-icon class="fa-spin">wb_sunny</mat-icon>
+				</div>
+			</div>
+		</div>
+	</mat-card-content>
+</mat-card>

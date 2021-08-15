@@ -1,0 +1,75 @@
+<!-- Loader section -->
+<div *ngIf="isLoading" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" class="apdmodal" style="display:block; ">
+    <mat-progress-spinner  color='primary' mode="indeterminate" value="50">
+    </mat-progress-spinner>
+</div>
+<div mat-dialog-title class="bdrbtm1px" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+    <mat-icon color="primary">{{titleIcon}}</mat-icon>    
+    <mat-label class="mgnleft10">{{title}}</mat-label>
+    <mat-icon color="warn" class="pointer" matTooltip="Close dialog" (click)="onClose()">cancel</mat-icon>
+</div>
+<form  [formGroup]="form" (submit)="addUpdateFact()">
+    <div mat-dialog-content>
+        <div fxFlex="45">
+            <div fxLayout="column" fxLayoutAlign="start stretch">
+                <mat-form-field>
+                    <input matInput placeholder="Name" formControlName="Name" name="Name" id="Name" required>
+                    <mat-error *ngIf="form.get('Name').invalid">{{getErrorMessage(form.get('Name'),'Name')}}</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <textarea matInput placeholder="Description" formControlName="Desc" name="Desc" id="Desc" required></textarea>
+                    <mat-error *ngIf="form.get('Desc').invalid">{{getErrorMessage(form.get('Desc'),'Desc')}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <mat-form-field>
+                    <mat-select placeholder="Fact Type" formControlName="FactType" name="FactType" id="FactType" class="capitalize" required>
+                        <!-- <mat-option class="capitalize" *ngFor="let ele of factTypeColl" class="dropdown-item capitalize" [value]="ele">{{ele.list_name}}</mat-option> -->
+                        <cdk-virtual-scroll-viewport itemSize="20" class="dropdown-viewport">
+                            <mat-option class="capitalize" *cdkVirtualFor="let ele of factTypeColl" matTooltip="{{ele.list_name}}"  class="dropdown-item capitalize" [value]="ele">{{ele.list_name}}</mat-option>
+                        </cdk-virtual-scroll-viewport>                
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-select placeholder="UOM" formControlName="Uom" name="Uom" id="Uom" class="capitalize" required>
+                        <cdk-virtual-scroll-viewport itemSize="20" class="dropdown-viewport">
+                            <mat-option class="capitalize" *cdkVirtualFor="let ele of uomColl" class="dropdown-item capitalize" matTooltip="{{ele.list_name}}" [value]="ele">{{ele.list_name}}</mat-option>
+                        </cdk-virtual-scroll-viewport>                
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div fxLayout="column" fxLayoutAlign="start stretch">
+                <mat-form-field>
+                    <input matInput type="number" placeholder="Value" formControlName="Value" name="Value" id="Value" required>
+                    <mat-error *ngIf="form.get('Value').invalid">{{getErrorMessage(form.get('Value'),'Value')}}</mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+        <div fxFlex="5"></div>
+        <div fxFlex="45">
+            <div class="aligncenter font_16" >Attachment</div>
+            <div><input type="file" accept=".xls,.xlsx,.docx,.doc,.pdf,image/*" id="file" ng2FileSelect [uploader]="uploader" multiple style='color: transparent; border:none; width:100px;' (onFileSelected)="onFileSelected($event)">
+            {{fileList.length}} files selected</div>
+            <mat-list>
+                <mat-list-item *ngFor="let file of fileList; let i = index" style="height:28px;font-size: 12px;">
+                  <mat-icon matListIcon color="warn" class="pointer" matTooltip="Remove Attachment" (click)="removeFile(i)">remove_circle</mat-icon>
+                  <mat-icon *ngIf="data.id != undefined" matListIcon class="pointer" (click)="downloadFile(i)" matTooltip="Download {{file?.name||file?.originalName}}" color="primary">get_app</mat-icon>
+                  <h6 matLine matTooltip="{{file?.name||file?.originalName}} ({{file?.size/1024/1024 | number:'.2' }} MB)">{{file?.name||file?.originalName}} ({{file?.size/1024/1024 | number:'.2' }} MB)</h6>
+                </mat-list-item>
+            </mat-list>
+            <!-- <mat-form-field>
+                <mat-chip-list #chipList aria-label="File uploaded">
+                <mat-chip *ngFor="let file of fileList; let i = index" (removed)="removeFile(i)">
+                  {{file?.name||file?.originalName}} ({{file?.size/1024/1024 | number:'.2' }} MB)
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                  <mat-icon *ngIf="data.id != undefined" class="pointer" (click)="downloadFile(i)" color="primary">get_app</mat-icon>
+                </mat-chip>
+              </mat-chip-list>
+            </mat-form-field> -->
+        </div>
+    </div>
+    <div mat-dialog-actions fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <button type="button" color="accent" mat-raised-button (click)="onClose()">Cancel</button>
+        <button *ngIf="!isLoading && form.valid" type="submit" color="primary" mat-raised-button>Save</button>
+    </div>
+</form>

@@ -1,0 +1,6 @@
+node_modules
+waka-sop-ui/node_modules
+tsserver/node_modules
+tsserver/log
+tsserver/dist
+waka-sop-ui/dist

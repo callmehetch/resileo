@@ -1,0 +1,7 @@
+/node_modules
+/workflow-ui/node_modules
+/workflow-ui/package-lock.json
+/log
+/uploads
+/.vs
+/package-lock.json

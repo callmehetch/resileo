@@ -1,0 +1,27 @@
+<app-login-header></app-login-header>
+<mat-card fxLayout="row wrap" fxLayoutAlign="center start" [style.height.px]="height-64" >
+	<div fxFlex="50" fxFlex.md="80" fxFlex.sm="90" fxFlex.xs="100">
+		<mat-card-title>
+			<div fxLayout="row" fxLayoutAlign="space-between center">
+				<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+					<mat-icon id="arrowgoback" class="mgnleft10 pointer" matTooltip="Back" (click)="goBack()">arrow_back_ios</mat-icon>
+					<div>Organizations</div>
+				</div>
+				<button mat-raised-button color="primary" (click)="addOrg()"><mat-icon>add_circle</mat-icon><span class="mgnleft10">Add New</span></button>
+			</div>
+		</mat-card-title>
+		<mat-card-content *ngFor="let org of orgColl" style="border: 1px solid lightgray; line-height: 48px; padding:0 30px">
+			<div fxLayout="row wrap" fxLayoutAlign="space-between center">
+				<div fxLayout="row wrap" fxLayoutAlign="start center">
+					<img [src]="org.logo" style="width:30px; height:auto"/>
+					<div class="mgnleft10 font_12 fntwt600"><span class="clrblue  pointer">{{org.name}}</span> owner</div>
+				</div>
+				<div fxLayout="row" fxLayoutGap="20px">
+					<mat-icon class="pointer" color="primary" matTooltip="Settings" matTooltip="layout 2" (click)="orgProfile(org)">settings</mat-icon>
+					<mat-icon class="pointer" color="primary" matTooltip="Settings" matTooltip="layout 1" (click)="orgSettings(org)">settings</mat-icon>
+					<mat-icon class="pointer" color="warn" matTooltip="Leave Organization">person_remove</mat-icon>
+				</div>
+			</div>
+		</mat-card-content>
+	</div>
+</mat-card>

@@ -1,0 +1,86 @@
+<!-- Loader section -->
+<div *ngIf="isLoading" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" class="apdmodal" style="display:block; ">
+    <mat-progress-spinner  color='primary' mode="indeterminate" value="50">
+    </mat-progress-spinner>
+</div>
+<div mat-dialog-title class="bdrbtm1px" fxLayout="row" fxLayoutAlign="space-between center">
+    <mat-icon color="primary">{{titleIcon}}</mat-icon>    
+    <mat-label class="mgnleft10">{{title}}</mat-label>
+    <mat-icon color="warn" class="pointer" matTooltip="Close dialog" (click)="onClose()">cancel</mat-icon>
+</div>
+<div mat-dialog-content>
+    <form  [formGroup]="form">
+        <div fxFlex="70">
+            <div fxLayout="column" fxLayoutAlign="start stretch">
+                <mat-form-field>
+                    <input matInput placeholder="Name" formControlName="Name" name="Name" id="Name" required>
+                    <mat-error *ngIf="form.get('Name').invalid">{{getErrorMessage(form.get('Name'))}}</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <textarea matInput placeholder="Description" formControlName="Desc" name="Desc" id="Desc" required></textarea>
+                    <mat-error *ngIf="form.get('Desc').invalid">{{getErrorMessage(form.get('Desc'))}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+                <mat-form-field fxFlex="45">
+                    <mat-label>Choose start date</mat-label>
+                    <input matInput [matDatepicker]="stdate" formControlName="FormStartDate" (dateChange)="changeDate('start',$event)">
+                    <mat-datepicker-toggle matSuffix [for]="stdate"></mat-datepicker-toggle>
+                    <mat-datepicker #stdate></mat-datepicker>
+                    <mat-error *ngIf="form.get('FormStartDate').invalid">{{getErrorMessage(form.get('FormStartDate'))}}</mat-error>
+                </mat-form-field>
+                <mat-form-field fxFlex="45">
+                    <mat-label>Choose end date</mat-label>
+                    <input matInput [matDatepicker]="eddate" formControlName="FormEndDate" (dateChange)="changeDate('end',$event)">
+                    <mat-datepicker-toggle matSuffix [for]="eddate"></mat-datepicker-toggle>
+                    <mat-datepicker #eddate></mat-datepicker>
+                    <mat-error *ngIf="form.get('FormEndDate').invalid">{{getErrorMessage(form.get('FormEndDate'))}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="mgntop5" fxLayout="row" fxLayoutAlign="space-between center">
+                <mat-checkbox color="warn" formControlName="IsActive">Active</mat-checkbox>
+                <mat-checkbox color="primary" formControlName="IsCompleted">Completed</mat-checkbox>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+                <mat-form-field fxFlex="100">
+                    <mat-select placeholder="Project" formControlName="FormProjectCode" name="FormProjectCode" id="FormProjectCode" class="capitalize" required (selectionChange)="clearOnProjectSelection()">
+                        <mat-option class="capitalize" *ngFor="let ele of projectsColl" class="dropdown-item capitalize" matTooltip="{{ele.project_name}}" [value]="ele">{{ele.project_name}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+                <mat-form-field fxFlex="100">
+                    <mat-select placeholder="Owner" formControlName="FormOwner" name="FormOwner" id="FormOwner" class="capitalize" required>
+                        <mat-option class="capitalize" *ngFor="let ele of ownersColl" class="dropdown-item capitalize" matTooltip="{{ele.user_name}}" [value]="ele">{{ele.user_name}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <div fxFlex="5"></div>
+        <div fxFlex="50">
+            <div class="aligncenter font_16" >Attachment</div>
+            <div><input type="file" accept=".xls,.xlsx,.docx,.doc,.pdf,image/*" id="file" ng2FileSelect [uploader]="uploader" multiple style='color: transparent; border:none; width:100px;' (onFileSelected)="onFileSelected($event)">
+            {{fileList.length}} files selected</div>
+            <mat-list>
+                <mat-list-item *ngFor="let file of fileList; let i = index" style="height:28px;font-size: 12px;">
+                  <mat-icon matListIcon color="warn" class="pointer" matTooltip="Remove Attachment" (click)="removeFile(i)">remove_circle</mat-icon>
+                  <mat-icon *ngIf="data.id != undefined" matListIcon class="pointer" (click)="downloadFile(i)" matTooltip="Download {{file?.name||file?.originalName}}" color="primary">get_app</mat-icon>
+                  <h6 matLine matTooltip="{{file?.name||file?.originalName}} ({{file?.size/1024/1024 | number:'.2' }} MB)">{{file?.name||file?.originalName}} ({{file?.size/1024/1024 | number:'.2' }} MB)</h6>
+                </mat-list-item>
+            </mat-list>
+            <!-- <mat-form-field>
+                <mat-chip-list #chipList aria-label="File uploaded">
+                <mat-chip *ngFor="let file of fileList; let i = index" (removed)="removeFile(i)">
+                  {{file?.name||file?.originalName}} ({{file?.size/1024/1024 | number:'.2' }} MB)
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                  <mat-icon *ngIf="data.id != undefined" class="pointer" (click)="downloadFile(i)" color="primary">get_app</mat-icon>
+                </mat-chip>
+              </mat-chip-list>
+            </mat-form-field> -->
+        </div>
+    </form>
+</div>
+<div mat-dialog-actions fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+    <button mat-raised-button color="accent" (click)="onClose()">Cancel</button>
+    <button *ngIf="!isLoading && form.valid" color="primary" mat-raised-button (click)="addUpdateSuggestion()">Save</button>
+</div>

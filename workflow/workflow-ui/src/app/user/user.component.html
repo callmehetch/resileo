@@ -1,0 +1,79 @@
+<app-header></app-header>
+<!-- Loader section -->
+<div *ngIf="isLoading" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" class="apdmodal" style="display:block; ">
+    <mat-progress-spinner  color='primary' mode="indeterminate" value="50"></mat-progress-spinner>
+</div>
+<!--User Grid-->
+<div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="center start"  [style.max-height.px] = "screenParam.height" class="mgntop10">
+    <mat-card fxFlex="95" fxFlex.md="95" fxFlex.sm="100" fxFlex.xs="100"> 
+        <mat-card-header>
+            <div fxFlex="80" fxLayout="row">
+                <div mat-card-avatar><mat-icon color="primary">people</mat-icon></div>
+                <mat-card-title style="margin-top:4px!important;">{{cardTitle}}</mat-card-title>
+            </div>
+            <div fxFlex="15" fxLayoutAlign="end">
+                <button id="adduser" mat-mini-fab aria-label="Add User" color="warn" matTooltip="Add a User" (click)="openModuleAdd()">
+                    <mat-icon >add_circle</mat-icon>
+                </button>
+            </div>
+        </mat-card-header>
+        <mat-card-content fxLayout="row wrap" fxLayoutAlign="center start">
+            <mat-form-field fxFlex="80">
+                <mat-label>Filter</mat-label>
+                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Ex. login name, user name, mobile, email etc">
+            </mat-form-field>
+            <div cdkScrollable id="user-grid" style="overflow: auto" [style.max-height.px]="screenParam.height-145" [style.width.px]="screenParam.width-40" class="mat-elevation-z8">
+                <table mat-table #table [dataSource]="userColl" matSort [style.width.px]="tableWidth">
+                    <ng-container matColumnDef="edit">
+                        <th style="padding:0 10px!important" mat-header-cell *matHeaderCellDef>Edit </th>
+                        <td style="padding:3px 10px!important" matTooltip="Edit {{element.id}}" mat-cell *matCellDef="let element"> 
+                            <mat-icon *ngIf="element.id==loggedInUserId || loggedInUserId == 1" color="primary" class="pointer" (click)="openModuleEdit(element)">edit</mat-icon>
+                            <mat-icon *ngIf="element.id!=loggedInUserId && loggedInUserId != 1" matTooltip="No Permission to Edit ({{element.id}})" color="primary" class="pointer" style="opacity:0.5">edit</mat-icon>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="change_pass">
+                        <th style="padding:0 10px!important" mat-header-cell *matHeaderCellDef> </th>
+                        <td style="padding:3px 10px!important"  mat-cell *matCellDef="let element">
+                            <mat-icon *ngIf="element.id==loggedInUserId || loggedInUserId == 1" matTooltip="Reset Password ({{element.id}})" color="primary" class="pointer" (click)="resetPassword(element)">vpn_key</mat-icon>
+                            <mat-icon *ngIf="element.id!=loggedInUserId && loggedInUserId != 1" matTooltip="No Permission to reset password ({{element.id}})" color="primary" class="pointer" style="opacity:0.5">vpn_key</mat-icon>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="delete">
+                        <th style="padding:0px 10px!important" mat-header-cell *matHeaderCellDef>Del </th>
+                        <td style="padding:3px 10px!important" mat-cell *matCellDef="let element"> 
+                            <div *ngIf="element.id!=1">
+                                <mat-icon *ngIf="!element.is_deleted"  matTooltip="Delete {{element.id}}" color="warn" class="pointer" (click)="delUndeluser(element,'delete')">delete</mat-icon>
+                                <mat-icon *ngIf="element.is_deleted"  matTooltip="Undelete {{element.id}}" color="warn" class="pointer" (click)="delUndeluser(element,'undelete')">restore_from_trash</mat-icon>
+                            </div>
+                            <div *ngIf="element.id==1">
+                                <mat-icon *ngIf="!element.is_deleted" matTooltip="Cannot delete admin user" color="accent" style="opacity:0.5" >delete</mat-icon>
+                            </div>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="login_name"> 
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px !important">Login Name</th>
+                        <td mat-cell style="padding:3px 10px !important" *matCellDef="let element">{{element.login_name}}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="user_name">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px !important">User Name</th>
+                        <td mat-cell style="padding:3px 10px !important" *matCellDef="let element">{{element.user_name}}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="mobile">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px !important">Mobile</th>
+                        <td mat-cell style="padding:3px 10px !important" *matCellDef="let element">{{element.mobile}}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="email">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px !important">Email</th>
+                        <td mat-cell style="padding:3px 10px !important" *matCellDef="let element">{{element.email}}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="created_on">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px !important">Created On</th>
+                        <td mat-cell style="padding:3px 10px !important"  *matCellDef="let element">{{element.created_on | date :'dd-MMM-yy'}}</td>
+                    </ng-container> 
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true;"></tr>
+                    <tr mat-row class="tr-rowalt-light"  *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>  
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>

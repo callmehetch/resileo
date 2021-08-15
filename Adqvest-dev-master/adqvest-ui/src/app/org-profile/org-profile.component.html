@@ -1,0 +1,211 @@
+<app-login-header></app-login-header>
+<mat-card [style.height.px]="height-100" style="overflow-y: auto;">
+	<mat-card-content fxLayoutAlign="start start">
+		<mat-sidenav-container fxFlex="100" fxFlex.md="100" fxFlex.sm="100" fxFlex.xs="100" [style.height.px]="height-100" hasBackdrop='false' style="overflow-y: auto;">
+			<mat-sidenav #sidenav mode="side" [opened]="isOpen" style="width:210px">
+				<mat-list style="width:98%">
+					<mat-list-item class="pointer" [ngClass]="{'menuitemselected':selList=='up','menuitem':selList!='up'}" (click)="selList='up'; updProfile()">
+						<mat-icon mat-list-icon color="primary">person</mat-icon>						<div mat-line style="font-size: 14px;">Update Profile</div>
+					</mat-list-item>
+					<mat-list-item *ngIf="userDet.invited_by==undefined" class="pointer" [ngClass]="{'menuitemselected':selList=='profile','menuitem':selList!='profile'}" (click)="selList='profile'">
+						<mat-icon mat-list-icon color="primary">business</mat-icon>
+						<div mat-line style="font-size: 14px;">Organization</div>
+					</mat-list-item>
+					<mat-list-item *ngIf="userDet.invited_by==undefined" class="pointer" [ngClass]="{'menuitemselected':selList=='bp','menuitem':selList!='bp'}" (click)="selList='bp'">
+						<div mat-list-icon><span style="color:#673ab7">&#8377;</span></div>
+						<div mat-line style="font-size: 14px;">Billing & Plans</div>
+					</mat-list-item>
+					<mat-list-item *ngIf="planDetails?.max_users>1" class="pointer" [ngClass]="{'menuitemselected':selList=='mm','menuitem':selList!='mm'}" (click)="selList='mm';">
+						<mat-icon mat-list-icon color="primary">people</mat-icon>
+						<div mat-line style="font-size: 14px;">Members</div>
+					</mat-list-item>
+					<mat-list-item *ngIf="!userDet.is_admin" class="pointer menuitem" (click)="delAccount()">
+						<mat-icon mat-list-icon color="primary">person_off</mat-icon>
+						<div mat-line style="font-size: 14px;">Delete My Account</div>
+					</mat-list-item>
+				</mat-list>
+			</mat-sidenav>
+			<mat-sidenav-content style="background-color: white;">
+				<div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="20px">
+					<div class="mgntop10 fntrc20">Current Plan</div>
+					<div *ngIf="planDetails?.ul_id != undefined" fxLayout="row" fxLayoutAlign="start center" class="mgntop10 font_16">
+						<div class="fntwt600">Plan Name:</div>
+						<div class="mgnleft5">{{planDetails?.plan_name}}</div>
+						<div class="mgnleft30"><span class="fntwt600">Expires On:</span> </div>
+						<div class="mgnleft5  clrred">{{planDetails?.valid_to | date:'dd-MMM-yyyy'}}</div>
+						<div class="mgnleft30"><span class="fntwt600">Max Users:</span></div>
+						<div class="mgnleft5">{{planDetails?.max_users}}</div>
+						<div *ngIf="planDetails?.company_name!=undefined" class="fntwt600 mgnleft30">Owned By:</div>
+						<div *ngIf="planDetails?.company_name!=undefined" class="mgnleft5 capitalize">{{planDetails?.company_name}}</div>
+					</div>
+					<div *ngIf="planDetails?.ul_id == undefined" fxLayout="row" fxLayoutAlign="start center" class="mgntop10 font_16">
+						<div class=" fntwt600">Plan Name:</div>
+						<div class="mgnleft20">7 Days Trial</div>
+						<div class="mgnleft30"><span class="fntwt600">Expires On:</span> </div>
+						<div class="mgnleft10 clrred fntwt600">{{planDetails?.valid_to | date:'dd-MMM-yyyy'}}</div>
+						<div *ngIf="planDetails?.company_name!=undefined" class="fntwt600 mgnleft30">Owned By: </div>
+						<div *ngIf="planDetails?.company_name!=undefined" class="mgnleft10 capitalize">{{planDetails?.company_name}}</div>
+					</div>
+	
+				</div>
+				<div *ngIf="selList=='up'" fxLayoutAlign="center start" class="mgntop20">
+					<form [formGroup]="updform">
+						<mat-card class="mat-elevation-z8" style="padding:48px" >
+							<div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px" >
+								<div class="fntrc20">Update Profile</div>
+							</div>
+							<mat-card-content class="mcctop32px">
+								<div></div>
+								<div fxLayout="column">
+									<label>Email Address<span class="clrred">*</span> <span class="font_12">(cannot change email address)</span></label>
+									<input placeholder="Enter your email address" formControlName="Email" class="inputbox" required>
+								</div>
+								<div fxLayout="column">
+									<label>Full Name<span class="clrred">*</span></label>
+									<input class="inputbox" placeholder="Enter your full name" formControlName="Name" name="Name" id="Name" required>
+									<mat-error *ngIf="updform.get('Name').invalid && updform.get('Name').dirty" class="font_12" style="width:300px">{{getErrorMessage(updform.get('Name'),'Name')}}</mat-error>
+								</div>
+								<div fxLayout="column">
+									<label>Mobile</label>
+									<input class="inputbox" placeholder="Enter your mobile number" formControlName="Mobile" name="Mobile" id="Mobile">
+									<mat-error *ngIf="updform.get('Mobile').invalid && updform.get('Mobile').dirty" class="font_12" style="width:300px">{{getErrorMessage(updform.get('Mobile'),'Mobile')}}</mat-error>
+								</div>
+							</mat-card-content>
+							<mat-card-actions>
+								<div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
+									<button *ngIf="updform.valid && updform.dirty" id="btnReqPass" mat-raised-button class="fntwt600 btnbgclr"  (click)="UpdateProfile()">Update Profile</button>
+									<button *ngIf="updform.invalid || !updform.dirty" id="btnReqPass" mat-raised-button class="fntwt600" style="cursor:default;" disabled >Update Profile</button>
+								</div>
+							</mat-card-actions>
+						</mat-card>
+					</form>
+				</div>
+				<div  *ngIf="selList=='bp'" fxLayoutAlign="center start" class="mgntop20">
+					<mat-card *ngIf="planColl.length>0" class="mat-elevation-z0"  >
+						<mat-card-header style='place-content: center;'>
+							<div mat-list-icon><span class="icon-bg">&#8377;</span></div>
+							<mat-card-title><span class="fntrc20">Available Plans</span></mat-card-title>
+						</mat-card-header>
+						<mat-card-content fxLayout="row wrap" fxLayoutAlign="space-around center">
+							<mat-card style="width:250px; padding-top: 0px; margin-right: 10px;"  class="mat-elevation-z8 cardhover" *ngFor="let pln of planColl">
+								<mat-card-header fxLayout="row" fxLayoutAlign="center center" class="cardHeader">
+									<mat-card-title class="fntrc20">{{pln.plan_name}}</mat-card-title>
+								</mat-card-header>
+								<mat-card-content style="height:200px; margin-top:16px" fxLayout="column" fxLayoutAlign="start center">
+									<div style="line-height: 24px;">Max Users: {{pln.max_users}}</div>
+									<div style="line-height: 24px;">Validity: {{pln.period_days}} Days</div>
+									<div style="line-height: 24px;">Plan Price: {{pln.plan_price}}</div>
+								</mat-card-content>
+								<mat-card-actions fxLayout="row" fxLayoutAlign="center center">
+									<button mat-raised-button class="btnbgclr fntwt600" (click)="plan(pln)">SELECT</button>
+									<!-- <button mat-raised-button class="btnbgclr" (click)="plan(pln)">{{planDetails?.plan_id== undefined ? 'Select' : planDetails?.plan_id==pln?.plan_id ? 'Renew': planDetails?.plan_id< pln?.plan_id? 'Upgrade': 'Downgrade'}} </button> -->
+								</mat-card-actions>
+							</mat-card>
+							<mat-card style="width:250px; margin-right:10px;padding-top: 0px; " class="mat-elevation-z8 cardhover">
+								<mat-card-header fxLayout="row" fxLayoutAlign="center center" class="cardHeader">
+									<mat-card-title class="fntrc20">Enterprise</mat-card-title>
+								</mat-card-header>
+								<mat-card-content style="height:200px;  margin-top:16px" fxLayout="column" fxLayoutAlign="start center">
+									<div style="line-height: 24px;">Max Users: Custom</div>
+									<div style="line-height: 24px;">Validity: 365 Days</div>
+									<div style="line-height: 24px;">Plan Price: Contact Sales</div>
+								</mat-card-content>
+								<mat-card-actions fxLayout="row" fxLayoutAlign="center center">
+									<button mat-raised-button class="btnbgclr fntwt600" (click)="plan('ent')">SELECT</button>
+									<!-- <button mat-raised-button class="btnbgclr" (click)="plan('ent')">{{planDetails?.plan_id== undefined ? 'Select' : 'Upgrade'}}</button> -->
+								</mat-card-actions>
+							</mat-card>
+						</mat-card-content>
+						<div *ngIf="licErrorMsg" class="clrred">{{licErrorMsg}}</div>
+					</mat-card>
+				</div>
+				<div *ngIf="selList=='profile'" fxLayoutAlign="center start" class="mgntop20">
+					<mat-card class="mat-elevation-z8" fxFlex="50" fxFlex.md="80" fxFlex.sm="90" fxFlex.xs="100" style="overflow-y: auto;padding:16px 48px" >
+						<mat-card-content fxLayout="row wrap" fxLayoutAlign="space-between start">
+							<div><span class="fntrc20">Set up your organization</span></div>
+							<mat-card-content >
+								<form [formGroup]="form">
+									<mat-card-content class="mcctop16px">
+										<div></div>
+										<div fxLayout="column">
+											<label>Email Address<span class="clrred">*</span></label>
+											<input placeholder="Enter your email address" formControlName="Email" name="Email" id="Email" class="inputbox" [readonly]="readonly" (focus)="readonly=false" required>
+											<mat-error *ngIf="form.get('Email').invalid && form.get('Email').dirty" class="font_12">{{getErrorMessage(form.get('Email'),'Email')}}</mat-error>
+										</div>
+										<div fxLayout="column">
+											<label>Business Name</label>
+											<input placeholder="Enter your Business Name" formControlName="EntityName" name="EntityName" id="EntityName" class="inputbox" [readonly]="readonly" (focus)="readonly=false" style="width: 98%;">
+											<mat-hint *ngIf="form.get('EntityName').valid" class="font_12">For example: Resileo-labs LLB ltd.</mat-hint>
+											<mat-error *ngIf="form.get('EntityName').invalid" class="font_12 clrred">{{getErrorMessage(form.get('EntityName'),'EntityName')}}</mat-error>
+										</div>
+										<div fxLayout="column">
+											<label>GSTIN</label>
+											<input placeholder="GSTIN Number"  formControlName="GST" name="GST" id="GST" class="inputbox" readonly="readonly" onfocus="javascript: this.removeAttribute('readonly')"  style="width: 98%;">
+											<mat-error *ngIf="form.get('GST').invalid" class="font_12 clrred">{{getErrorMessage(form.get('GST'),'GST')}}</mat-error>
+										</div>
+										<div class="font_12 mgntop20 mat-typography" style="text-align: justify;">By creating an account, you agree to the <span class="clrblue pointer">Corporate Terms of Service.</span> For more information about ADQVest privacy practices, see the <span class="clrblue pointer">ADQVest Privacy Statement</span>. We'll occasionally send you account-related emails.
+										</div>
+									</mat-card-content>
+									<mat-card-actions>
+										<div fxLayout="row" fxLayoutAlign="center start" style="width:100%">
+											<button *ngIf="form.valid" mat-raised-button class="btnbgclr" (click)="addLicense()">NEXT</button>
+											<button *ngIf="!form.valid" mat-raised-button class="btnbgclr" style=" opacity: 0.5;">NEXT</button>
+										</div>
+									</mat-card-actions>
+								</form>
+								<div *ngIf="licErrorMsg">{{licErrorMsg}}</div>
+							</mat-card-content>
+						</mat-card-content>
+				</mat-card>
+				</div>
+				<div *ngIf="selList=='mm'||userDet.invited_by!=undefined" fxLayout="row" fxLayoutAlign="center center" class="mgntop20">
+					<mat-card class="mat-elevation-z8 mgntop20" style="padding:48px">
+						<div class="fntrc20 aligncenter mgnbtm10">Manage Members</div>
+						<form *ngIf="userDet.invited_by==undefined" [formGroup]="invForm" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px">
+							<input placeholder="Enter invitee email address" formControlName="InviteEmail" name="InviteEmail" id="InviteEmail" class="inputbox" [readonly]="readonly" (focus)="readonly=false" required>
+							<input placeholder="Enter invitee Name" formControlName="Name" name="Name" id="Name" class="inputbox" [readonly]="readonly" (focus)="readonly=false" required>
+							<button *ngIf="isLicValid && invForm.valid" mat-raised-button class="btnbgclr" style="line-height: 26px;" (click)="invite()">Add Member</button>
+							<button *ngIf="!isLicValid || invForm.invalid" mat-raised-button class="btndisabled" style="line-height: 26px;opacity:0.5; cursor:default"  matTooltip="{{!isLicValid ? 'Reached Max limit as per your license': 'Invalid form'}}">Add Member</button>
+						</form>
+						<div [style.height.px]="height-400" style="overflow-y: auto;  margin-top:18px;">
+							<table mat-table #table [dataSource]="inviteEmailColl" matSort style="border:1px lightgray solid; border-radius: 10px; width:100%" >
+								<ng-container matColumnDef="email">
+									<th mat-header-cell class="tbl-head" *matHeaderCellDef mat-sort-header>EMAIL</th>
+									<td mat-cell class="font_12 tbl-row-pad"*matCellDef="let element">{{element.email}}</td>
+								</ng-container>
+								<ng-container matColumnDef="name">
+									<th mat-header-cell class="tbl-head" *matHeaderCellDef mat-sort-header>Name</th>
+									<td mat-cell class="font_12 tbl-row-pad"*matCellDef="let element">{{element.name}}</td>
+								</ng-container>
+								<ng-container matColumnDef="is_owner">
+									<th mat-header-cell class="tbl-head" *matHeaderCellDef mat-sort-header>ROLE</th>
+									<td mat-cell class="font_12 tbl-row-pad"*matCellDef="let element">{{element.is_owner?'Owner':'Member'}}</td>
+								</ng-container>
+								<ng-container matColumnDef="status">
+									<th mat-header-cell class="tbl-head" *matHeaderCellDef mat-sort-header>STATUS</th>
+									<td mat-cell class="font_12 tbl-row-pad"*matCellDef="let element">{{element.status}}</td>
+								</ng-container>
+								<ng-container matColumnDef="revoke">
+									<th  class="tbl-head" mat-header-cell *matHeaderCellDef></th>   
+									<td  mat-cell style="padding-left:5px;padding-right: 5px;" *matCellDef="let element; let i=index">
+										<div *ngIf= "userDet.invited_by==undefined">
+											<mat-icon *ngIf="!element.is_owner" id="revoke{{i}}" color="warn" class="pointer" matTooltip="Delete member" (click)="delInvite(element)">delete</mat-icon>
+											<mat-icon *ngIf="element.is_owner" id="revoke{{i}}" color="warn" matTooltip="Owner cannot be deleted" style="opacity: 0.5;">delete</mat-icon>
+										</div>
+										<div *ngIf= "userDet.invited_by!=undefined">
+											<mat-icon *ngIf="userDet.user_id==element.user_id" id="revoke{{i}}" color="warn" class="pointer" matTooltip="Opt-Out" (click)="optOut(element)">delete</mat-icon>
+											<mat-icon *ngIf="userDet.user_id!=element.user_id" id="revoke{{i}}" color="warn" matTooltip="You don't have permission" style="opacity: 0.5;">delete</mat-icon>
+										</div>
+									</td>
+								</ng-container>
+								<tr mat-header-row *matHeaderRowDef="dispInvEmail; sticky: true;" class="tblrowht"></tr>
+								<tr mat-row class="tr-rowalt-light" *matRowDef="let row; columns: dispInvEmail;"></tr>
+							</table>
+							<div *ngIf="!isLicValid" class="font_12 clrred">Reached max user limit. your license is valid for {{planDetails?.max_users}} users</div>
+						</div>
+					</mat-card>	
+				</div>
+			</mat-sidenav-content>
+		  </mat-sidenav-container>
+	</mat-card-content>
+</mat-card>

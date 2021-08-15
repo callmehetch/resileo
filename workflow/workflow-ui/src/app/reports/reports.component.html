@@ -1,0 +1,153 @@
+<app-header></app-header>
+<!-- Loader section -->
+<div *ngIf="isLoading" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" class="apdmodal" style="display:block; ">
+    <mat-progress-spinner  color='primary' mode="indeterminate" value="50"></mat-progress-spinner>
+</div>
+
+<div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="center start"  [style.max-height.px] = "screenParam.height" class="mgntop10">
+    <mat-card fxFlex="95" fxFlex.md="95" fxFlex.sm="100" fxFlex.xs="100"> 
+        <mat-card-header>
+            <div fxFlex="85" fxLayout="row" fxLayoutAlign="start center">
+              <div fxFlex="80" fxLayout="row" fxLayoutGap="20px">
+                <mat-icon *ngIf="visibleTab!=='reports_index'" class="pointer" color="warn" matToolTip="Back" (click)="showReportsIndex()">backspace</mat-icon>
+                <div mat-card-avatar><mat-icon color="primary">library_books</mat-icon></div>
+                <mat-card-title>{{cardTitle}}</mat-card-title>
+               </div>
+            </div>
+        </mat-card-header>
+        <mat-card-content *ngIf="visibleTab==='reports_index'" fxLayout="row wrap" fxLayoutAlign="center start">
+            <div id="reports_index" style="overflow: auto" class="mat-elevation-z8" [style.max-height.px]="screenParam.height-90" [style.width.px]="screenParam.width-40">
+              <mat-list fxFlex="95">
+                <div mat-subheader>
+                  <mat-icon mat-list-icon color="primary" class="mgnrgt10">folder_open</mat-icon>
+                  Tasks
+                </div>
+                <mat-list-item *ngIf="loginUser.user_id==1" (click)="showTab('pendingtask-grid')" class="pointer mgnbtm20" style="padding-left: 20px;">
+                  <mat-icon mat-list-icon color="primary">description</mat-icon>
+                  <div mat-line>Pending Task Report</div>
+                  <div mat-line>See all Tasks for which End-date is completed and Completion-Percentage is not 100%.</div>
+                </mat-list-item>
+                <mat-list-item *ngIf="loginUser.user_id==1" (click)="showInputs('actualEffort-grid')" class="pointer mgnbtm20" style="padding-left: 20px;">
+                  <mat-icon mat-list-icon color="primary">description</mat-icon>
+                  <div mat-line>Task Actual Effort Report</div>
+                  <div mat-line>See all Actual efforts posted.</div>
+                </mat-list-item>
+                <mat-list-item (click)="showInputs('user-actualEffort-grid')" class="pointer mgnbtm20" style="padding-left: 20px;">
+                  <mat-icon mat-list-icon color="primary">description</mat-icon>
+                  <div mat-line>My Actual Effort Report</div>
+                  <div mat-line>See all your Actual efforts posted.</div>
+                </mat-list-item>
+              </mat-list>
+            </div>
+        </mat-card-content>
+        
+        <!-- PendingTask Grid { -->
+        <mat-card-content *ngIf="visibleTab==='pendingtask-grid'" fxLayout="row wrap" fxLayoutAlign="center start">
+          <div fxFlex="100" fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="flex-end">
+            <button mat-mini-fab aria-label="Download Excel" color="primary" matTooltip="Download Excel" (click)="exporter.exportTable('xls',{fileName:'my-tasks'})">
+              <mat-icon>cloud_download</mat-icon>
+            </button>
+          </div>
+          <div cdkScrollable id="pendingtask-grid" style="overflow: auto" [style.max-height.px]="screenParam.height-90" [style.width.px]="screenParam.width-40" class="mat-elevation-z8">
+            <table mat-table #table matTableExporter [dataSource]="pendingTaskColl" matSort [style.width.px]="tableWidth" #exporter="matTableExporter">
+              <ng-container matColumnDef="suggestion_name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px!important">Key Result Name</th>
+                <td mat-cell style="padding:3px 10px !important" matTooltip={{element.suggestion_id}} class="capitalize" *matCellDef="let element">{{element.suggestion_name}}</td>
+              </ng-container>
+              <ng-container matColumnDef="task_name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px!important">Task Name</th>
+                <td mat-cell style="padding:3px 10px !important" matTooltip={{element.task_id}} class="capitalize" *matCellDef="let element">{{element.task_name}}</td>
+              </ng-container>
+              <ng-container matColumnDef="assigned_to_user">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px!important">Assigned To</th>
+                <td mat-cell style="padding:3px 10px !important" class="capitalize" *matCellDef="let element">{{element.assigned_to_user}}</td>
+              </ng-container>
+              <ng-container matColumnDef="department">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px!important">Department</th>
+                <td mat-cell style="padding:3px 10px !important" class="capitalize" *matCellDef="let element">{{element.department}}</td>
+              </ng-container>
+              <ng-container matColumnDef="delay_by">
+                <th mat-header-cell *matHeaderCellDef style="padding:0px 10px!important">Delayed By</th>
+                <td mat-cell style="padding:3px 10px !important" class="capitalize" *matCellDef="let element">
+                  {{ element.delay_by?.days ? element.delay_by?.days+' days, ':''}}
+                  {{ element.delay_by?.hours ? element.delay_by?.hours+' hrs ':''}}
+                  {{ element.delay_by?.minutes ? element.delay_by?.minutes+' mins':''}}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="end_date">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px!important">Due Date</th>
+                <td mat-cell style="padding:3px 10px !important" class="capitalize" *matCellDef="let element">{{element.end_date | date : 'dd-MMM-yy'}}</td>
+              </ng-container>
+              <ng-container matColumnDef="cp">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px!important">Completed Status</th>
+                <td mat-cell style="padding:3px 10px !important" class="capitalize alignright" *matCellDef="let element">{{element.cp}}%</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true;"></tr>
+              <tr mat-row class="tr-rowalt-light" style="height:58px" *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+            <div *ngIf="isLoading == false && pendingTaskColl.data.length === 0" class="mgntop20 mgnbtm20 mgnleft40 ">No Records Found!</div>
+          </div>
+        </mat-card-content>
+        <!-- PendingTask Grid } -->
+
+
+        <!-- Actual Effort Grid { -->
+        <mat-card-content *ngIf="visibleTab==='actualEffort-grid'||visibleTab==='user-actualEffort-grid'" fxLayout="row wrap" fxLayoutAlign="start start">
+          <div fxFlex="100" fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="flex-end">
+            <button mat-mini-fab aria-label="Download Excel" color="primary" matTooltip="Download Excel" (click)="exporter.exportTable('xls',{fileName:'my-tasks'})">
+              <mat-icon>cloud_download</mat-icon>
+            </button>
+          </div>
+          <mat-grid-list id="reportsParamGrid" cols="3" rowHeight="25px" fxFlex="50" fxLayoutAlign="start start" class="mgnbtm20">
+            <mat-grid-tile>Inputs</mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_project_list" style="right: 1 !important">Project Code:</mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_project_list" style="left: 1 !important">{{reportParam.project_name}}</mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_project_list"></mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_key_list" style="right: 1 !important">Key result:</mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_key_list" style="left: 1 !important">{{reportParam.suggestion_name}}</mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_key_list"></mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_assigned_to" style="right: 1 !important">Assigned To:</mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_assigned_to" style="left: 1 !important">{{reportParam.assigned_to_name}}</mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_assigned_to"></mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_start_date" style="right: 1 !important">Start Date:</mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_start_date" style="left: 1 !important">{{reportParam.start_date | date : 'dd-MMM-yy'}}</mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_start_date"></mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_end_date" style="right: 1 !important">End Date:</mat-grid-tile>
+            <mat-grid-tile *ngIf="reportParam.show_end_date" style="left: 1 !important">{{reportParam.end_date | date : 'dd-MMM-yy'}}</mat-grid-tile>
+          </mat-grid-list>
+          <div cdkScrollable id="actualEffort-grid" style="overflow: auto" [style.max-height.px]="screenParam.height-getReportParamsSize().height-108" [style.width.px]="screenParam.width-40" class="mat-elevation-z8">
+            <table mat-table #tableActualEffortGrid matTableExporter [dataSource]="actualEffortTasksReportColl" matSort [style.width.px]="tableWidth" #exporter="matTableExporter">
+              <ng-container matColumnDef="created_on">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px!important">Created On</th>
+                <td mat-cell style="padding:3px 10px !important" class="capitalize" *matCellDef="let element" matTooltip="{{element.date_of_status | date : 'dd-MMM-yy'}}">{{element.created_on | date : 'dd-MMM-yy HH:mm:ss'}}</td>
+              </ng-container>
+              <ng-container matColumnDef="task_name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px!important">Task Name</th>
+                <td mat-cell style="padding:3px 10px !important" class="capitalize" *matCellDef="let element">{{element.task_name}}</td>
+              </ng-container>
+              <ng-container matColumnDef="remarks">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px!important">Remarks</th>
+                <td mat-cell style="padding:3px 10px !important" class="capitalize" *matCellDef="let element">{{element.remarks}}</td>
+              </ng-container>
+              <ng-container matColumnDef="cp">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="aligncenter" style="padding:0px 10px!important">Completion Status</th>
+                <td mat-cell style="padding:3px 10px !important" class="capitalize alignright" *matCellDef="let element">{{element.cp}}%</td>
+              </ng-container>
+              <ng-container matColumnDef="hs">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header calss="aligncenter" style="padding:0px 0px!important">Hours Spent</th>
+                <td mat-cell style="padding:3px 10px !important" class="capitalize alignright" *matCellDef="let element">{{element.hs}}</td>
+              </ng-container>
+              <ng-container matColumnDef="suggestion_name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px!important">Key Result Name</th>
+                <td mat-cell style="padding:3px 10px !important" class="capitalize" *matCellDef="let element">{{element.suggestion_name}}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true;"></tr>
+              <tr mat-row class="tr-rowalt-light" style="height:58px" *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+            <div *ngIf="isLoading == false && actualEffortTasksReportColl.data.length === 0" class="mgntop20 mgnbtm20 mgnleft40 ">No Records Found!</div>
+          </div>
+        </mat-card-content>
+        <!-- Actual Effort Grid } -->
+
+    </mat-card>
+</div>

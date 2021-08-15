@@ -1,0 +1,40 @@
+<!-- Loader section -->
+<div *ngIf="isLoading" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" class="apdmodal" style="display:block; ">
+    <mat-progress-spinner  color='primary' mode="indeterminate" value="50">
+    </mat-progress-spinner>
+</div>
+<div mat-dialog-title class="bdrbtm1px" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+    <mat-icon color="primary">{{titleIcon}}</mat-icon>    
+    <mat-label class="mgnleft10">{{title}}</mat-label>
+    <mat-icon color="warn" class="pointer" matTooltip="Close dialog" (click)="onClose()">cancel</mat-icon>
+</div>
+<div mat-dialog-content fxLayout="row wrap" fxLayoutAlign="center start">
+    <mat-form-field fxFlex="80">
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Ex. Notes, status etc">
+    </mat-form-field>
+    <div cdkScrollable id="contact-history-grid" style="overflow: auto" class="mat-elevation-z8">
+        <table mat-table #table [dataSource]="contactHisColl" matSort>
+            <ng-container matColumnDef="delete">
+                <th style="padding:0px 10px!important" mat-header-cell *matHeaderCellDef>Del </th>   
+                <td style="padding:3px 10px!important" matTooltip="Delete id:{{element.id}}" mat-cell *matCellDef="let element"> 
+                    <mat-icon color="warn" class="pointer" (click)="delContactUpdate(element)">delete</mat-icon>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="date_of_status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px !important">Status Date</th>
+                <td mat-cell style="padding:3px 10px !important"  *matCellDef="let element" > {{element.date_of_status | date :'dd-MMM-yy'}}</td>
+            </ng-container> 
+            <ng-container matColumnDef="notes">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px !important">Notes</th>
+                <td mat-cell style="padding:3px 10px !important" *matCellDef="let element">{{element.notes}}</td>
+            </ng-container>
+            <ng-container matColumnDef="created_on">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding:0px 10px !important" >Created On</th>
+                <td mat-cell style="padding:3px 10px !important"  *matCellDef="let element">{{element.created_on | date :'dd-MMM-yy HH:mm'}}</td>
+            </ng-container> 
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true;"></tr>
+            <tr mat-row class="tr-rowalt-light" style="height:58px" *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>  
+    </div>
+</div>

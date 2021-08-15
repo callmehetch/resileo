@@ -1,0 +1,40 @@
+<div mat-dialog-title class="bdrbtm1px" fxLayout="row" fxLayoutAlign="space-between center">
+    <mat-icon color="primary">settings</mat-icon>    
+    <mat-label color="primary" class="mgnleft10">Column Definition</mat-label>
+    <mat-icon id="close" color="warn" class="pointer" matTooltip="Close dialog" (click)="onClose()">cancel</mat-icon>
+</div>
+<div mat-dialog-content fxLayout="column">
+    <form  [formGroup]="form" >
+        <div formArrayName="ColDef" fxFlex="100">
+            <div *ngFor="let ele of form.get('ColDef')['controls']; let i = index">
+                <div [formGroupName]="i" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px">
+                    <mat-form-field>
+                        <input matInput placeholder="Column Name" formControlName="ColName" name="ColName{{i}}" id="ColName{{i}}" required>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <input matInput placeholder="Display Name" formControlName="DispName" name="DispName{{i}}" id="DispName{{i}}" required>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-select formControlName="ColType" placeholder="Column Type" (selectionChange)="getColUnitColl()">
+                            <mat-option *ngFor="let type of colTypeColl" [value]="type">{{type}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-select formControlName="ColUnit" placeholder="Column Data Unit">
+                            <mat-option *ngFor="let unit of colUnitColl[ele.get('ColType')?.value]" [value]="unit">{{unit}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-select formControlName="Param" placeholder="Map Param" (selectionChange)="onChangeParam($event.value, i)">
+                            <mat-option *ngFor="let param of paramColl" [value]="param">{{param}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div mat-dialog-actions fxLayout="row wrap" fxLayoutAlign="space-around center">
+    <button id="cancel" mat-raised-button class="btnbgclr" (click)="onClose()">Cancel</button>
+    <button id="save" class="btnbgclr" mat-raised-button (click)="saveColUnits()">Apply Changes</button>
+</div>

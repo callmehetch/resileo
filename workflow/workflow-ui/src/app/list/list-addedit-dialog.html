@@ -1,0 +1,38 @@
+<!-- Loader section -->
+<div *ngIf="isLoading" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" class="apdmodal" style="display:block; ">
+    <mat-progress-spinner  color='primary' mode="indeterminate" value="50">
+    </mat-progress-spinner>
+</div>
+<div mat-dialog-title class="bdrbtm1px" fxLayout="row" fxLayoutAlign="space-between center">
+    <mat-icon color="primary">{{titleIcon}}</mat-icon>    
+    <mat-label class="mgnleft10">{{title}}</mat-label>
+    <mat-icon color="warn" class="pointer" matTooltip="Close dialog" (click)="onClose()">cancel</mat-icon>
+</div>
+<form  [formGroup]="form" (submit)="addUpdateList()">
+    <div mat-dialog-content>
+        <div fxLayout="column" fxLayoutAlign="start strech" fxLayoutGap="10px">
+            <mat-form-field>
+                <input matInput placeholder="List Name" formControlName="ListName" name="ListName" id="ListName" required>
+                <mat-error *ngIf="form.get('ListName').invalid">{{getErrorMessage(form.get('ListName'),'ListName')}}</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+                <textarea matInput placeholder="Description" formControlName="Description" name="Description" id="Description" required></textarea>
+                <mat-error *ngIf="form.get('Description').invalid">{{getErrorMessage(form.get('Description'),'Description')}}</mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+            <mat-form-field *ngIf="data.id==undefined">
+                <mat-select  placeholder="List Group" formControlName="ListGroup" name="ListGroup" id="ListGroup" class="capitalize" required>
+                    <cdk-virtual-scroll-viewport itemSize="0" class="dropdown-viewport">
+                        <mat-option class="capitalize" *cdkVirtualFor="let ele of listGroupColl" class="dropdown-item capitalize" [value]="ele">{{ele}}</mat-option>
+                    </cdk-virtual-scroll-viewport>
+                </mat-select>
+            </mat-form-field>
+            <mat-label *ngIf="data.id!=undefined">List group cannot be changed on Edit</mat-label>
+        </div>
+    </div>
+    <div mat-dialog-actions fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" class="mgnbtm20">
+        <button type="button" mat-raised-button color="accent" (click)="onClose()">Cancel</button>
+        <button *ngIf="!isLoading && form.valid" type="submit" color="primary" mat-raised-button>Save</button>
+    </div>
+</form>

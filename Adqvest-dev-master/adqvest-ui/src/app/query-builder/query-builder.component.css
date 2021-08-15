@@ -1,0 +1,43 @@
+::ng-deep .mat-selected .mat-pseudo-checkbox-checked {
+    background-color: darkblue;
+}
+.menulist{
+    background-color: #f6f8fa
+}
+.menuitem {
+    background-color: transparent;
+    border: 0;
+    border-top: 1px solid #ebedef;
+    color: #24292e;
+    position: relative;
+    text-align: left;
+    width: 100%;
+}
+
+.menuitemselected {
+    background-color: white;
+    border: 0;
+    border-top: 1px solid #ebedef;
+    border-left: 3px solid #eec658;
+    color: #24292e;
+    position: relative;
+    text-align: left;
+    width: 100%;
+}
+
+.sidenav-pull{
+    position: absolute;
+    top: 40px;
+    left: -5px;
+    height: 80px;
+    width: 12px;
+    word-break: break-all;
+    background-color: #c2dbf3;
+    color: #288ce9;
+    padding-left: 9px;
+    padding-right: 2px;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 100;
+    font-size: 10px;
+}

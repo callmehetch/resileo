@@ -1,0 +1,102 @@
+<app-login-header></app-login-header>
+<mat-card [style.height.px]="height-100" style="overflow-y: auto;">
+	<mat-card-title>
+		<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px">
+			<mat-icon id="arrowgoback" class="mgnleft10 pointer" matTooltip="Back" (click)="goBack()">arrow_back_ios</mat-icon>
+			<div fxLayout="column">
+				<div class="capitalize">{{org?.name}} Profile</div>
+				<div class="font_12 mgntop10">Adqvest Account</div>
+			</div>
+		</div>
+	</mat-card-title>
+	<mat-card-content>
+		<div fxLayout="row wrap" fxLayoutAlign="space-around center">
+			<div fxFlex="25" fxFlex.md="30" fxFlex.sm="40" fxFlex.xs="90">
+				<form [formGroup]="form" style="width:100%;margin-top:10px">
+					<mat-card style="height:340px; overflow-y: auto;" >
+						<mat-card-header>
+							<mat-icon color="primary">business</mat-icon>
+							<mat-card-title>Profile</mat-card-title>
+						</mat-card-header>
+						<mat-card-content>
+							<div fxLayout="column">
+								<mat-form-field >
+									<mat-label class="fntwt600 mgnbtm10">Organization Display Name</mat-label>
+									<input matInput placeholder="Organization Display Name" formControlName="DisplayName" name="DisplayName" id="DisplayName" readonly="readonly" onfocus="javascript: this.removeAttribute('readonly')" required>
+								</mat-form-field>
+								<mat-form-field  style="width:100%;margin:6px">
+									<input matInput placeholder="Contact Email" formControlName="ContactEmail" name="ContactEmail" id="ContactEmail" readonly="readonly" onfocus="javascript: this.removeAttribute('readonly')">
+									<mat-error *ngIf="form.get('ContactEmail').invalid">{{getErrorMessage(form.get('ContactEmail'),'ContactEmail')}}</mat-error>
+								</mat-form-field>
+								<mat-form-field  style="width:100%;margin:6px">
+									<input matInput placeholder="Billing Email" formControlName="BillingEmail" name="BillingEmail" id="BillingEmail" readonly="readonly" onfocus="javascript: this.removeAttribute('readonly')">
+									<mat-error *ngIf="form.get('ContactEmail').invalid">{{getErrorMessage(form.get('BillingEmail'),'BillingEmail')}}</mat-error>
+								</mat-form-field>
+								<mat-form-field >
+									<input matInput placeholder="Organization URL" formControlName="URL" name="URL" id="URL" readonly="readonly" onfocus="javascript: this.removeAttribute('readonly')">
+								</mat-form-field>
+							</div>
+						</mat-card-content>
+						<mat-card-actions fxLayoutAlign="center">
+							<button mat-raised-button color='primary'>Save</button>
+						</mat-card-actions>
+					</mat-card>
+				</form>
+			</div>
+			<div fxFlex="25" fxFlex.md="33" fxFlex.sm="40" fxFlex.xs="90">
+				<mat-card style="height:340px; overflow-y: auto; margin-top:10px">
+					<mat-card-header>
+						<div><span style="padding:2px 7px 2px 7px; border-radius:100%; color:white; font-weight: 600;background-color: brown;" >&#8377;</span></div>
+						<mat-card-title>Billing & Plans</mat-card-title>
+					</mat-card-header>
+					<mat-card-content>
+						<div class="padtop5">
+							<mat-radio-button class="font_16" color="primary"><span class="clrblue fntwt600">Free</span></mat-radio-button>
+							<h5 style="text-align: justify; padding-top:10px">Information about the plan goes here. Describe the plan so that it does not exceed 3 lines</h5>
+						</div>
+						<div class="padtop5">
+							<mat-radio-button class="font_16" color="primary"><span class="clrblue fntwt600">Per User</span></mat-radio-button>
+							<h5 style="text-align: justify;padding-top:10px">Information about the plan goes here. Describe the plan so that it does not exceed 3 lines</h5>
+						</div>
+						<div class="padtop5">
+							<mat-radio-button class="font_16" color="primary"><span class="clrblue fntwt600">Enterprise</span></mat-radio-button>
+							<h5 style="text-align: justify;padding-top:10px">Information about the plan goes here. Describe the plan so that it does not exceed 3 lines</h5>
+						</div>
+					</mat-card-content>
+					<mat-card-actions fxLayoutAlign="center">
+						<button mat-raised-button color='primary'>Save</button>
+					</mat-card-actions>
+				</mat-card>
+			</div>
+			<div fxFlex="25" fxFlex.md="33" fxFlex.sm="40" fxFlex.xs="90">
+				<mat-card style="height:340px; position:relative;overflow-y: auto;margin-top:10px">
+					<mat-card-header>
+						<mat-icon class="clrred">security</mat-icon>
+						<mat-card-title>Previleges</mat-card-title>
+					</mat-card-header>
+					<mat-card-content>
+						<div class="padtop5">
+							<h5 style="text-align: justify; padding-top:10px">Base permissions to the organization’s dashboards apply to all members and excludes outside collaborators</h5>
+							<mat-select placeholder="Permissions" name="permission" class="capitalize" multiple>
+								<mat-option class="capitalize not-empty-select"  *ngFor = "let ele of permissionColl" [value]="ele">{{ele}}</mat-option>
+							</mat-select>
+						</div>
+					</mat-card-content>
+					<mat-card-actions fxLayoutAlign="center">
+						<button style="position:absolute; bottom:10px" mat-raised-button color='primary'>Save</button>
+					</mat-card-actions>
+				</mat-card>
+			</div>
+		</div>
+		<!-- <mat-tab-group>
+			<mat-tab label="Profile" >
+				</mat-tab>
+			<mat-tab label="Billing Plans"> Content 2 
+
+			</mat-tab>
+			<mat-tab label="Member Privileges"> Content 3 
+
+			</mat-tab>
+		</mat-tab-group> -->
+	</mat-card-content>
+</mat-card>

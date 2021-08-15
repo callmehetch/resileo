@@ -1,0 +1,29 @@
+<h1 mat-dialog-title>Set up your organization</h1>
+<mat-dialog-content>
+    <form [formGroup]="form" fxLayout="column" [fxLayoutAlign]="fxlayoutalign">
+        <mat-form-field style="width:100%; margin:6px">
+            <mat-label class="fntwt600 mgnbtm10">ADQVest Account Name</mat-label>
+            <input matInput placeholder="Adqvest Account Name" formControlName="OrgAdqName" name="OrgAdqName" id="OrgAdqName" readonly="readonly" onfocus="javascript: this.removeAttribute('readonly')" (blur)="isAdqNameExist()" required>
+            <span *ngIf="checkOrg" matSuffix><mat-icon class="font_20 clrgreen"  matTooltip="Valid Account">check_circle</mat-icon></span>
+            <span *ngIf="!checkOrg" matSuffix ><mat-icon class="font_20" color="warn" matTooltip="Account already exist">error</mat-icon></span>
+            <mat-hint>This will be the name of your account on Adqvest Platform.</mat-hint>
+            <mat-error *ngIf="form.get('OrgAdqName').invalid">{{getErrorMessage(form.get('OrgAdqName'),'OrgAdqName')}}</mat-error>
+        </mat-form-field>
+        <mat-form-field  style="width:100%;margin:6px">
+            <input matInput placeholder="Email" formControlName="Email" name="Email" id="Email" readonly="readonly" onfocus="javascript: this.removeAttribute('readonly')" required>
+            <mat-error *ngIf="form.get('Email').invalid">{{getErrorMessage(form.get('Email'),'Email')}}</mat-error>
+        </mat-form-field>
+        <mat-form-field  style="width:100%; margin:6px">
+            <input matInput placeholder="Business Name" formControlName="EntityName" name="EntityName" id="EntityName" readonly="readonly" onfocus="javascript: this.removeAttribute('readonly')" required>
+            <mat-hint>For example: Resileo-labs LLB ltd.</mat-hint>
+            <mat-error *ngIf="form.get('EntityName').invalid">{{getErrorMessage(form.get('EntityName'),'EntityName')}}</mat-error>
+        </mat-form-field>
+    </form>
+    <div class="font_12 mgntop20 mat-typography" style="text-align: justify;">By creating an account, you agree to the <span class="clrblue pointer">Corporate Terms of Service.</span> For more information about ADQVest privacy practices, see the <span class="clrblue pointer">ADQVest Privacy Statement</span>. We'll occasionally send you account-related emails.</div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <div fxLayout="row" fxLayoutAlign="center start" style="width:100%">
+        <button *ngIf="form.valid" mat-raised-button style="width:90%; background-color: green; color:white">NEXT</button>
+        <button *ngIf="form.invalid" mat-raised-button style="width:90%; background-color: green; color:white; opacity: 0.5;">NEXT</button>
+    </div>
+</mat-dialog-actions>
